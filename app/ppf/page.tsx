@@ -5,7 +5,8 @@ import { useQuery } from "@tanstack/react-query";
 import { useCurrency } from "@/components/currency-context";
 import { calculatePpfSchedule } from "@/lib/finance/compound";
 import { FreshnessBadge } from "@/components/freshness-badge";
-import { Shield, CheckCircle2, AlertCircle, Info, Landmark } from "lucide-react";
+import { Shield, CheckCircle2, AlertCircle, Info, Landmark, Plus } from "lucide-react";
+import { stageInstrumentForCompare } from "@/components/compare/floating-compare-pill";
 
 export default function PpfPage() {
   const { format } = useCurrency();
@@ -39,13 +40,29 @@ export default function PpfPage() {
           </p>
         </div>
 
-        {ppfRecord && (
-          <FreshnessBadge
-            sourceName={ppfRecord.sourceName}
-            sourceUrl={ppfRecord.sourceUrl}
-            lastUpdated={ppfRecord.lastVerified}
-          />
-        )}
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() =>
+              stageInstrumentForCompare({
+                id: `ppf-${Date.now()}`,
+                type: "PPF",
+              })
+            }
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary hover:bg-primary-hover text-white text-xs font-medium shadow-sm transition-colors shrink-0"
+          >
+            <Plus className="w-3.5 h-3.5" />
+            <span>Add to compare</span>
+          </button>
+
+          {ppfRecord && (
+            <FreshnessBadge
+              sourceName={ppfRecord.sourceName}
+              sourceUrl={ppfRecord.sourceUrl}
+              lastUpdated={ppfRecord.lastVerified}
+            />
+          )}
+        </div>
       </div>
 
       {/* Rules Banner */}

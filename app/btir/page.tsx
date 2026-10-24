@@ -14,6 +14,7 @@ import {
   AlertCircle,
   HelpCircle,
   ExternalLink,
+  Sparkles,
 } from "lucide-react";
 import {
   ResponsiveContainer,
@@ -131,7 +132,7 @@ export default function BtirPage() {
       {/* Header */}
       <div className="space-y-1">
         <h1 className="text-2xl sm:text-3xl font-semibold text-text tracking-tight">
-          Term insurance + invest difference
+          LIC vs Term + Invest
         </h1>
         <p className="text-xs sm:text-sm text-text-muted max-w-2xl leading-relaxed">
           Compare combining life cover and investment in an endowment policy versus separating them with pure term insurance and investing the rest.
@@ -139,8 +140,8 @@ export default function BtirPage() {
       </div>
 
       {/* Inputs & Configuration Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="bg-surface rounded-xl border border-border p-5 shadow-sm space-y-4 transition-colors">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+        <div className="bg-surface rounded-xl border border-border p-5 shadow-sm space-y-4 transition-colors lg:sticky lg:top-20">
           <h3 className="font-semibold text-sm text-text border-b border-border pb-2">
             Traditional Policy Parameters
           </h3>
@@ -286,7 +287,15 @@ export default function BtirPage() {
         </div>
 
         {/* Comparison Output & Visual Frontier */}
-        <div className="lg:col-span-2 space-y-6">
+        <div className="lg:col-span-2 space-y-4">
+          {/* Plain Verdict Sentence */}
+          <div className="p-4 rounded-xl bg-surface border border-border shadow-sm flex items-start gap-3">
+            <Sparkles className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+            <div className="text-xs text-text leading-relaxed">
+              For an annual outlay of <strong>{format(annualPremium)}</strong>, buying pure term insurance plus investing the difference in equity funds yields <strong>{format(btirResult.btirCorpusMf)}</strong> (IRR: {mfExpectedRate}%) and <strong>{format(btirResult.termLifeCover)}</strong> in life cover ({Math.round(btirResult.termLifeCover / btirResult.licSumAssured)}× higher), compared to <strong>{format(btirResult.licProjectedCorpus)}</strong> (IRR: {formatPercent(btirResult.licEffectiveIrrPct)}) and only {format(btirResult.licSumAssured)} life cover in LIC.
+            </div>
+          </div>
+
           {/* Key Metric Highlights */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div className="p-4 rounded-xl bg-surface border border-border space-y-1 transition-colors">

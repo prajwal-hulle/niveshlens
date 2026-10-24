@@ -5,8 +5,9 @@ import { useQuery } from "@tanstack/react-query";
 import { FreshnessBadge } from "@/components/freshness-badge";
 import { useCurrency } from "@/components/currency-context";
 import { fvCompoundLumpsum } from "@/lib/finance/compound";
-import { Building, ShieldCheck, ExternalLink, AlertTriangle, ArrowRight } from "lucide-react";
+import { Building, ShieldCheck, ExternalLink, AlertTriangle, ArrowRight, Plus } from "lucide-react";
 import Link from "next/link";
+import { stageInstrumentForCompare } from "@/components/compare/floating-compare-pill";
 
 export default function FdExplorerPage() {
   const { format } = useCurrency();
@@ -128,7 +129,7 @@ export default function FdExplorerPage() {
                 </div>
               </div>
 
-              <div className="pt-3 border-t border-border flex items-center justify-between text-xs">
+              <div className="pt-3 border-t border-border flex items-center justify-between text-xs gap-2">
                 <FreshnessBadge
                   sourceName={fd.sourceName}
                   sourceUrl={fd.sourceUrl}
@@ -136,13 +137,29 @@ export default function FdExplorerPage() {
                   compact
                 />
 
-                <Link
-                  href={`/compare?fd=${fd.id}`}
-                  className="inline-flex items-center gap-1 text-primary hover:underline font-medium"
-                >
-                  <span>Compare</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </Link>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() =>
+                      stageInstrumentForCompare({
+                        id: `fd-${fd.id}-${Date.now()}`,
+                        type: "FD",
+                        bankId: fd.id,
+                      })
+                    }
+                    className="inline-flex items-center gap-1 text-primary hover:text-primary-hover font-medium text-xs px-2 py-1 rounded bg-primary/10 transition-colors"
+                  >
+                    <Plus className="w-3 h-3" />
+                    <span>Add to compare</span>
+                  </button>
+                  <Link
+                    href={`/compare?fd=${fd.id}`}
+                    className="inline-flex items-center gap-1 text-text-muted hover:text-text font-medium"
+                  >
+                    <span>View</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </Link>
+                </div>
               </div>
             </div>
           );

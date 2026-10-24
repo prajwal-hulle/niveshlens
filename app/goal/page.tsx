@@ -112,9 +112,9 @@ export default function GoalPage() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
         {/* Left Inputs Card */}
-        <div className="bg-surface rounded-xl border border-border p-5 shadow-sm space-y-4 transition-colors">
+        <div className="bg-surface rounded-xl border border-border p-5 shadow-sm space-y-4 transition-colors lg:sticky lg:top-20">
           <h3 className="font-semibold text-sm text-text border-b border-border pb-2">
             Target &amp; horizon
           </h3>
@@ -242,7 +242,15 @@ export default function GoalPage() {
         </div>
 
         {/* Right Output & Charts */}
-        <div className="lg:col-span-2 space-y-6">
+        <div className="lg:col-span-2 space-y-4">
+          {/* Plain Verdict Sentence */}
+          <div className="p-4 rounded-xl bg-surface border border-border shadow-sm flex items-start gap-3">
+            <Sparkles className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+            <div className="text-xs text-text leading-relaxed">
+              To build a target of <strong>{format(targetCorpus)}</strong> in <strong>{horizonYears} years</strong>, start a monthly SIP of <strong>{format(activeStartSip)}</strong>{enableStepUp ? ` (stepping up by ${stepUpPct}% annually)` : " (fixed monthly)"} at {expectedReturnPct}% return. Your total personal investment will be {format(finalInvested)}, creating <strong>+{format(totalGains)}</strong> in compound wealth.
+            </div>
+          </div>
+
           {/* Output Highlight Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div className="p-4 rounded-xl bg-surface border border-border space-y-1 transition-colors">

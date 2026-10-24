@@ -32,8 +32,6 @@ export function Navbar() {
   const { compact, toggleCompact } = useCurrency();
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [howItWorksOpen, setHowItWorksOpen] = useState(false);
-  const [mobileAccordionOpen, setMobileAccordionOpen] = useState(false);
   const [searchModalOpen, setSearchModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<any[]>([]);
@@ -44,7 +42,6 @@ export function Navbar() {
   const [authLoading, setAuthLoading] = useState(true);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
 
-  const dropdownRef = useRef<HTMLDivElement>(null);
   const userMenuRef = useRef<HTMLDivElement>(null);
 
   // Listen to Supabase auth state changes
@@ -75,16 +72,12 @@ export function Navbar() {
   // Close dropdown on outside click or escape
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
-        setHowItWorksOpen(false);
-      }
       if (userMenuRef.current && !userMenuRef.current.contains(e.target as Node)) {
         setUserMenuOpen(false);
       }
     }
     function handleEscape(e: KeyboardEvent) {
       if (e.key === "Escape") {
-        setHowItWorksOpen(false);
         setUserMenuOpen(false);
       }
     }
@@ -98,7 +91,6 @@ export function Navbar() {
 
   // Close menus on route change
   useEffect(() => {
-    setHowItWorksOpen(false);
     setUserMenuOpen(false);
     setMobileMenuOpen(false);
   }, [pathname]);
@@ -152,55 +144,10 @@ export function Navbar() {
   };
 
   const primaryNavLinks = [
-    { href: "/compare", label: "Comparator", icon: Scale },
-    { href: "/profile", label: "Profile", icon: Compass },
-    { href: "/goal", label: "Goal", icon: Target },
-    { href: "/btir", label: "Term+Invest", icon: ShieldAlert },
-  ];
-
-  const howItWorksItems = [
-    {
-      title: "Comparator",
-      href: "/compare",
-      icon: Scale,
-      desc: "Compare FD, PPF, mutual funds and LIC side by side on return, risk, liquidity and charges.",
-    },
-    {
-      title: "Profile",
-      href: "/profile",
-      icon: Compass,
-      desc: "Answer a short questionnaire to get your risk level and cover gap.",
-    },
-    {
-      title: "Goal Planner",
-      href: "/goal",
-      icon: Target,
-      desc: "Find the monthly SIP needed to reach a target amount.",
-    },
-    {
-      title: "Term + Invest",
-      href: "/btir",
-      icon: ShieldAlert,
-      desc: "Compare a traditional endowment policy against term insurance plus mutual funds.",
-    },
-    {
-      title: "Fixed Deposits",
-      href: "/fd",
-      icon: Landmark,
-      desc: "Explore current bank FD rates, tenure options and DICGC insurance limits.",
-    },
-    {
-      title: "PPF",
-      href: "/ppf",
-      icon: PiggyBank,
-      desc: "See government-backed 15-year savings rules, deposit limits and loan facilities.",
-    },
-    {
-      title: "Glossary",
-      href: "/learn",
-      icon: BookOpen,
-      desc: "Plain-English explanations of key financial terms without jargon.",
-    },
+    { href: "/compare", label: "Compare", icon: Scale },
+    { href: "/goal", label: "Goal planner", icon: Target },
+    { href: "/btir", label: "LIC check", icon: ShieldAlert },
+    { href: "/learn", label: "Learn", icon: BookOpen },
   ];
 
   const userName =
@@ -251,63 +198,6 @@ export function Navbar() {
                 </Link>
               );
             })}
-
-            {/* How It Works Dropdown */}
-            <div className="relative" ref={dropdownRef}>
-              <button
-                type="button"
-                onClick={() => setHowItWorksOpen((prev) => !prev)}
-                aria-expanded={howItWorksOpen}
-                className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-colors ${
-                  howItWorksOpen || pathname === "/learn" || pathname === "/fd" || pathname === "/ppf"
-                    ? "text-primary bg-primary/10 font-semibold"
-                    : "text-text-muted hover:text-text hover:bg-surface-muted"
-                }`}
-              >
-                <span>How it works</span>
-                <ChevronDown
-                  className={`w-3 h-3 transition-transform duration-200 ${
-                    howItWorksOpen ? "rotate-180" : ""
-                  }`}
-                />
-              </button>
-
-              {howItWorksOpen && (
-                <div className="absolute left-1/2 -translate-x-1/2 mt-2 w-80 rounded-xl bg-surface border border-border shadow-lg p-2 z-50 animate-in fade-in zoom-in-95 duration-150">
-                  <div className="px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-text-muted">
-                    Guides & Tools
-                  </div>
-                  <div className="space-y-0.5">
-                    {howItWorksItems.map((item) => {
-                      const ItemIcon = item.icon;
-                      const isActive = pathname === item.href;
-                      return (
-                        <Link
-                          key={item.href}
-                          href={item.href}
-                          onClick={() => setHowItWorksOpen(false)}
-                          className={`flex items-start gap-3 p-2 rounded-lg transition-colors ${
-                            isActive
-                              ? "bg-primary/10 text-primary"
-                              : "hover:bg-surface-muted text-text"
-                          }`}
-                        >
-                          <div className="w-7 h-7 rounded-md bg-surface-muted text-primary flex items-center justify-center shrink-0 mt-0.5 border border-border">
-                            <ItemIcon className="w-3.5 h-3.5" />
-                          </div>
-                          <div className="min-w-0">
-                            <div className="text-xs font-medium">{item.title}</div>
-                            <div className="text-[11px] text-text-muted leading-tight line-clamp-2">
-                              {item.desc}
-                            </div>
-                          </div>
-                        </Link>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
-            </div>
           </nav>
 
           {/* Right Action Icons & Modals */}
@@ -438,47 +328,6 @@ export function Navbar() {
                 </Link>
               );
             })}
-
-            {/* Mobile Accordion for "How it works" */}
-            <div className="pt-2 border-t border-border">
-              <button
-                type="button"
-                onClick={() => setMobileAccordionOpen(!mobileAccordionOpen)}
-                className="w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium text-text hover:bg-surface-muted"
-              >
-                <span>How it works</span>
-                <ChevronDown
-                  className={`w-4 h-4 transition-transform ${mobileAccordionOpen ? "rotate-180" : ""}`}
-                />
-              </button>
-
-              {mobileAccordionOpen && (
-                <div className="pl-2 pr-1 py-1 space-y-1">
-                  {howItWorksItems.map((item) => {
-                    const ItemIcon = item.icon;
-                    return (
-                      <Link
-                        key={item.href}
-                        href={item.href}
-                        onClick={() => {
-                          setMobileMenuOpen(false);
-                          setMobileAccordionOpen(false);
-                        }}
-                        className="flex items-start gap-2.5 p-2 rounded-lg hover:bg-surface-muted text-text"
-                      >
-                        <div className="w-6 h-6 rounded-md bg-surface-muted border border-border text-primary flex items-center justify-center shrink-0 mt-0.5">
-                          <ItemIcon className="w-3.5 h-3.5" />
-                        </div>
-                        <div>
-                          <div className="text-xs font-medium">{item.title}</div>
-                          <div className="text-[10px] text-text-muted line-clamp-1">{item.desc}</div>
-                        </div>
-                      </Link>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
 
             {/* Mobile Auth Actions */}
             <div className="pt-3 border-t border-border">

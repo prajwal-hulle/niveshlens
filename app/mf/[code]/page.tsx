@@ -10,7 +10,9 @@ import {
   Percent,
   AlertCircle,
   Loader2,
+  Plus,
 } from "lucide-react";
+import { stageInstrumentForCompare } from "@/components/compare/floating-compare-pill";
 import {
   ResponsiveContainer,
   LineChart,
@@ -87,12 +89,30 @@ export default function MfDetailPage() {
           <p className="text-xs text-text-muted">{fund.fundHouse}</p>
         </div>
 
-        {isValidNavDate && (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary border border-primary/20 shrink-0">
-            <span className="w-2 h-2 rounded-full bg-primary" />
-            <span>NAV as of {fund.navDate}</span>
-          </span>
-        )}
+        <div className="flex items-center gap-3 shrink-0">
+          <button
+            type="button"
+            onClick={() =>
+              stageInstrumentForCompare({
+                id: `mf-${fund.schemeCode}-${Date.now()}`,
+                type: "MF",
+                schemeCode: fund.schemeCode,
+                schemeName: fund.schemeName,
+              })
+            }
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary hover:bg-primary-hover text-white text-xs font-medium shadow-sm transition-colors"
+          >
+            <Plus className="w-3.5 h-3.5" />
+            <span>Add to compare</span>
+          </button>
+
+          {isValidNavDate && (
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary border border-primary/20">
+              <span className="w-2 h-2 rounded-full bg-primary" />
+              <span>NAV as of {fund.navDate}</span>
+            </span>
+          )}
+        </div>
       </div>
 
       {/* 2x3 KPI Metric Cards */}

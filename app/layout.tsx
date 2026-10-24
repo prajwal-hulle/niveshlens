@@ -5,6 +5,7 @@ import { QueryProvider } from "@/components/query-provider";
 import { CurrencyProvider } from "@/components/currency-context";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
+import { FloatingComparePill } from "@/components/compare/floating-compare-pill";
 
 export const viewport: Viewport = {
   themeColor: [
@@ -60,6 +61,7 @@ export default function RootLayout({
               <Navbar />
               <main className="flex-1 mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 py-8">{children}</main>
               <Footer />
+              <FloatingComparePill />
             </CurrencyProvider>
           </QueryProvider>
         </ThemeProvider>

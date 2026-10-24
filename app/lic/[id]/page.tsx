@@ -7,8 +7,9 @@ import { useCurrency } from "@/components/currency-context";
 import { calculateLicCashFlowsAndIRR } from "@/lib/finance/insurance";
 import { FreshnessBadge } from "@/components/freshness-badge";
 import { formatPercent } from "@/lib/utils";
-import { Shield, ExternalLink, AlertTriangle, ArrowRight, CheckCircle2 } from "lucide-react";
+import { Shield, ExternalLink, AlertTriangle, ArrowRight, CheckCircle2, Plus } from "lucide-react";
 import Link from "next/link";
+import { stageInstrumentForCompare } from "@/components/compare/floating-compare-pill";
 
 export default function LicDetailPage() {
   const params = useParams();
@@ -100,13 +101,34 @@ export default function LicDetailPage() {
           <p className="text-xs text-text-muted">{plan?.description}</p>
         </div>
 
-        {plan && (
-          <FreshnessBadge
-            sourceName={plan.sourceName}
-            sourceUrl={plan.sourceUrl}
-            lastUpdated={plan.lastVerified}
-          />
-        )}
+        <div className="flex items-center gap-3 shrink-0">
+          <button
+            type="button"
+            onClick={() =>
+              stageInstrumentForCompare({
+                id: `lic-${plan.planId}-${Date.now()}`,
+                type: "LIC",
+                planId: plan.planId,
+                annualPremium,
+                sumAssured,
+                policyTerm,
+                premiumPayingTerm: ppt,
+              })
+            }
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary hover:bg-primary-hover text-white text-xs font-medium shadow-sm transition-colors"
+          >
+            <Plus className="w-3.5 h-3.5" />
+            <span>Add to compare</span>
+          </button>
+
+          {plan && (
+            <FreshnessBadge
+              sourceName={plan.sourceName}
+              sourceUrl={plan.sourceUrl}
+              lastUpdated={plan.lastVerified}
+            />
+          )}
+        </div>
       </div>
 
       {/* User Policy Input & Live IRR Calculator */}
