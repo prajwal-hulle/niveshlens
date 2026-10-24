@@ -1,0 +1,112 @@
+[
+  {
+    "schemeCode": 122639,
+    "schemeName": "Parag Parikh Flexi Cap Fund - Direct Plan - Growth",
+    "planType": "DIRECT",
+    "category": "Flexi Cap Fund",
+    "terPct": 0.62,
+    "effectiveDate": "2024-12-31",
+    "lastVerified": "2025-01-15",
+    "sourceName": "AMFI Monthly TER Disclosure (PPFAS Mutual Fund)",
+    "sourceUrl": "https://www.amfiindia.com/research-information/other-data/total-expense-ratio"
+  },
+  {
+    "schemeCode": 122640,
+    "schemeName": "Parag Parikh Flexi Cap Fund - Regular Plan - Growth",
+    "planType": "REGULAR",
+    "category": "Flexi Cap Fund",
+    "terPct": 1.33,
+    "effectiveDate": "2024-12-31",
+    "lastVerified": "2025-01-15",
+    "sourceName": "AMFI Monthly TER Disclosure (PPFAS Mutual Fund)",
+    "sourceUrl": "https://www.amfiindia.com/research-information/other-data/total-expense-ratio"
+  },
+  {
+    "schemeCode": 120503,
+    "schemeName": "Mirae Asset Large Cap Fund - Direct Plan - Growth",
+    "planType": "DIRECT",
+    "category": "Large Cap Fund",
+    "terPct": 0.54,
+    "effectiveDate": "2024-12-31",
+    "lastVerified": "2025-01-15",
+    "sourceName": "AMFI Monthly TER Disclosure (Mirae Asset)",
+    "sourceUrl": "https://www.amfiindia.com/research-information/other-data/total-expense-ratio"
+  },
+  {
+    "schemeCode": 118834,
+    "schemeName": "Mirae Asset Large Cap Fund - Regular Plan - Growth",
+    "planType": "REGULAR",
+    "category": "Large Cap Fund",
+    "terPct": 1.51,
+    "effectiveDate": "2024-12-31",
+    "lastVerified": "2025-01-15",
+    "sourceName": "AMFI Monthly TER Disclosure (Mirae Asset)",
+    "sourceUrl": "https://www.amfiindia.com/research-information/other-data/total-expense-ratio"
+  },
+  {
+    "schemeCode": 120716,
+    "schemeName": "HDFC Mid-Cap Opportunities Fund - Direct Plan - Growth",
+    "planType": "DIRECT",
+    "category": "Mid Cap Fund",
+    "terPct": 0.76,
+    "effectiveDate": "2024-12-31",
+    "lastVerified": "2025-01-15",
+    "sourceName": "AMFI Monthly TER Disclosure (HDFC AMC)",
+    "sourceUrl": "https://www.amfiindia.com/research-information/other-data/total-expense-ratio"
+  },
+  {
+    "schemeCode": 118989,
+    "schemeName": "HDFC Mid-Cap Opportunities Fund - Regular Plan - Growth",
+    "planType": "REGULAR",
+    "category": "Mid Cap Fund",
+    "terPct": 1.62,
+    "effectiveDate": "2024-12-31",
+    "lastVerified": "2025-01-15",
+    "sourceName": "AMFI Monthly TER Disclosure (HDFC AMC)",
+    "sourceUrl": "https://www.amfiindia.com/research-information/other-data/total-expense-ratio"
+  },
+  {
+    "schemeCode": 120828,
+    "schemeName": "Nippon India Small Cap Fund - Direct Plan - Growth",
+    "planType": "DIRECT",
+    "category": "Small Cap Fund",
+    "terPct": 0.69,
+    "effectiveDate": "2024-12-31",
+    "lastVerified": "2025-01-15",
+    "sourceName": "AMFI Monthly TER Disclosure (Nippon India AMC)",
+    "sourceUrl": "https://www.amfiindia.com/research-information/other-data/total-expense-ratio"
+  },
+  {
+    "schemeCode": 118778,
+    "schemeName": "Nippon India Small Cap Fund - Regular Plan - Growth",
+    "planType": "REGULAR",
+    "category": "Small Cap Fund",
+    "terPct": 1.54,
+    "effectiveDate": "2024-12-31",
+    "lastVerified": "2025-01-15",
+    "sourceName": "AMFI Monthly TER Disclosure (Nippon India AMC)",
+    "sourceUrl": "https://www.amfiindia.com/research-information/other-data/total-expense-ratio"
+  },
+  {
+    "schemeCode": 120152,
+    "schemeName": "SBI Bluechip Fund - Direct Plan - Growth",
+    "planType": "DIRECT",
+    "category": "Large Cap Fund",
+    "terPct": 0.86,
+    "effectiveDate": "2024-12-31",
+    "lastVerified": "2025-01-15",
+    "sourceName": "AMFI Monthly TER Disclosure (SBI Funds Management)",
+    "sourceUrl": "https://www.amfiindia.com/research-information/other-data/total-expense-ratio"
+  },
+  {
+    "schemeCode": 119551,
+    "schemeName": "SBI Bluechip Fund - Regular Plan - Growth",
+    "planType": "REGULAR",
+    "category": "Large Cap Fund",
+    "terPct": 1.58,
+    "effectiveDate": "2024-12-31",
+    "lastVerified": "2025-01-15",
+    "sourceName": "AMFI Monthly TER Disclosure (SBI Funds Management)",
+    "sourceUrl": "https://www.amfiindia.com/research-information/other-data/total-expense-ratio"
+  }
+]

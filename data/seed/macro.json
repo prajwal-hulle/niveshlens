@@ -1,0 +1,42 @@
+[
+  {
+    "indicator": "repo_rate",
+    "name": "RBI Policy Repo Rate",
+    "value": 6.50,
+    "unit": "%",
+    "effectiveDate": "2024-02-08",
+    "lastVerified": "2025-01-15",
+    "sourceName": "Reserve Bank of India (Monetary Policy)",
+    "sourceUrl": "https://www.rbi.org.in/scripts/PolicyRates.aspx"
+  },
+  {
+    "indicator": "t_bill_91d",
+    "name": "91-Day Treasury Bill Yield",
+    "value": 6.48,
+    "unit": "%",
+    "effectiveDate": "2025-01-10",
+    "lastVerified": "2025-01-15",
+    "sourceName": "CCIL / RBI Financial Markets Watch",
+    "sourceUrl": "https://www.ccilindia.com/"
+  },
+  {
+    "indicator": "cpi_inflation",
+    "name": "CPI Combined Headline Inflation",
+    "value": 5.22,
+    "unit": "%",
+    "effectiveDate": "2024-12-31",
+    "lastVerified": "2025-01-14",
+    "sourceName": "Ministry of Statistics and Programme Implementation (MoSPI)",
+    "sourceUrl": "https://mospi.gov.in/press-release"
+  },
+  {
+    "indicator": "g_sec_10y",
+    "name": "10-Year Government Benchmark Yield (7.18 GS 2033)",
+    "value": 6.82,
+    "unit": "%",
+    "effectiveDate": "2025-01-12",
+    "lastVerified": "2025-01-15",
+    "sourceName": "RBI Clearing Corporation of India",
+    "sourceUrl": "https://www.fimmda.org/"
+  }
+]

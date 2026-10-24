@@ -1,0 +1,19 @@
+# Tests and test configurations
+__tests__
+*.test.ts
+*.test.tsx
+*.spec.ts
+*.spec.tsx
+vitest.config.ts
+
+# Scratch and temporary directories
+scratch
+.gemini
+*.tmp
+*.log
+
+# Local environment files
+.env*.local
+
+# Drizzle migrations folder (pushed via drizzle-kit push directly)
+drizzle
