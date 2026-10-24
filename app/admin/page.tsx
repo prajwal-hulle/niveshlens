@@ -251,7 +251,7 @@ export default function AdminPage() {
       </div>
 
       {/* Tabs */}
-      <div className="flex flex-wrap items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-2 text-xs">
+      <div className="flex flex-wrap items-center gap-1.5 border-b border-border pb-2 text-xs">
         {[
           { key: "macro", label: "Macro Rates (RBI / MoSPI)" },
           { key: "fd", label: "Bank FD Rates" },
@@ -266,10 +266,10 @@ export default function AdminPage() {
             key={tab.key}
             type="button"
             onClick={() => setActiveTab(tab.key as any)}
-            className={`px-3 py-2 rounded-xl font-bold transition-colors ${
+            className={`px-3 py-1.5 rounded-lg font-medium transition-colors ${
               activeTab === tab.key
-                ? "bg-navy-900 text-white dark:bg-emerald-500 dark:text-slate-950"
-                : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                ? "bg-primary text-white"
+                : "text-text-muted hover:text-text"
             }`}
           >
             {tab.label}

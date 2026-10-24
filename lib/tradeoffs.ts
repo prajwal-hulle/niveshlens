@@ -30,10 +30,10 @@ export function detectTradeoffs(
           instrumentName: inst.name,
           severity: "critical",
           title: "Extreme Volatility vs Risk Appetite Mismatch",
-          evidence: `Historical peak drawdown is -${inst.maxDrawdownPct}%, which exceeds your ${userProfile.riskAppetite.toLowerCase()} risk threshold of ${maxAllowedDrawdown}%.`,
+          evidence: `This fund fell ${inst.maxDrawdownPct.toFixed(1)}% at its worst, more than the ${maxAllowedDrawdown}% you said you can handle.`,
           whyItMatters:
             "During major market corrections, this fund has dropped significantly. A conservative or moderate investor may panic-sell at market bottoms, locking in real capital losses.",
-          source: "Historical Daily NAV Drawdown Analysis (api.mfapi.in)",
+          source: "Source: AMFI NAV history",
         });
       }
 

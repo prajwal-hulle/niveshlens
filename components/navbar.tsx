@@ -214,25 +214,25 @@ export function Navbar() {
 
   return (
     <>
-      <header className="sticky top-0 z-40 w-full backdrop-blur-md bg-white/80 dark:bg-slate-950/80 border-b border-slate-200 dark:border-slate-800 transition-colors">
-        <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
-          {/* Logo & Tagline */}
-          <Link href="/" className="flex items-center gap-2.5 group shrink-0 whitespace-nowrap">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-navy-900 to-emerald-600 dark:from-emerald-600 dark:to-emerald-400 flex items-center justify-center shadow-md shadow-emerald-500/20 group-hover:scale-105 transition-transform shrink-0">
-              <Scale className="w-5 h-5 text-white" />
+      <header className="sticky top-0 z-40 w-full bg-surface/95 backdrop-blur-md border-b border-border transition-colors">
+        <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+          {/* Logo & Tagline (Left) */}
+          <Link href="/" className="flex items-center gap-2.5 shrink-0 whitespace-nowrap">
+            <div className="w-8 h-8 rounded-lg bg-primary text-primary-foreground flex items-center justify-center shrink-0">
+              <Scale className="w-4 h-4" />
             </div>
             <div>
-              <div className="font-heading font-extrabold text-lg tracking-tight text-slate-900 dark:text-white leading-none whitespace-nowrap">
-                Nivesh<span className="text-emerald-600 dark:text-emerald-400">Lens</span>
+              <div className="font-heading font-semibold text-base tracking-tight text-text leading-none whitespace-nowrap">
+                Nivesh<span className="text-primary font-bold">Lens</span>
               </div>
-              <div className="text-[10px] text-slate-500 dark:text-slate-400 font-medium tracking-tight whitespace-nowrap">
+              <div className="text-[10px] text-text-muted font-normal tracking-tight whitespace-nowrap">
                 See what your investment hides
               </div>
             </div>
           </Link>
 
-          {/* Desktop Nav Links */}
-          <nav className="hidden lg:flex items-center gap-1 shrink-0">
+          {/* Desktop Nav Links (Centered) */}
+          <nav className="hidden lg:flex items-center justify-center gap-1 flex-1">
             {primaryNavLinks.map((link) => {
               const Icon = link.icon;
               const isActive = pathname === link.href || pathname.startsWith(link.href + "/");
@@ -240,13 +240,13 @@ export function Navbar() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${
+                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-colors ${
                     isActive
-                      ? "text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 font-semibold"
-                      : "text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60"
+                      ? "text-primary bg-primary/10 font-semibold"
+                      : "text-text-muted hover:text-text hover:bg-surface-muted"
                   }`}
                 >
-                  <Icon className="w-4 h-4 shrink-0" />
+                  <Icon className="w-3.5 h-3.5 shrink-0" />
                   <span>{link.label}</span>
                 </Link>
               );
@@ -258,26 +258,26 @@ export function Navbar() {
                 type="button"
                 onClick={() => setHowItWorksOpen((prev) => !prev)}
                 aria-expanded={howItWorksOpen}
-                className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${
+                className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-colors ${
                   howItWorksOpen || pathname === "/learn" || pathname === "/fd" || pathname === "/ppf"
-                    ? "text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 font-semibold"
-                    : "text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60"
+                    ? "text-primary bg-primary/10 font-semibold"
+                    : "text-text-muted hover:text-text hover:bg-surface-muted"
                 }`}
               >
                 <span>How it works</span>
                 <ChevronDown
-                  className={`w-3.5 h-3.5 transition-transform duration-200 ${
+                  className={`w-3 h-3 transition-transform duration-200 ${
                     howItWorksOpen ? "rotate-180" : ""
                   }`}
                 />
               </button>
 
               {howItWorksOpen && (
-                <div className="absolute right-0 mt-2 w-80 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl p-2 z-50 animate-in fade-in zoom-in-95 duration-150">
-                  <div className="px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
-                    Calculators & Guides
+                <div className="absolute left-1/2 -translate-x-1/2 mt-2 w-80 rounded-xl bg-surface border border-border shadow-lg p-2 z-50 animate-in fade-in zoom-in-95 duration-150">
+                  <div className="px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-text-muted">
+                    Guides & Tools
                   </div>
-                  <div className="space-y-1">
+                  <div className="space-y-0.5">
                     {howItWorksItems.map((item) => {
                       const ItemIcon = item.icon;
                       const isActive = pathname === item.href;
@@ -286,18 +286,18 @@ export function Navbar() {
                           key={item.href}
                           href={item.href}
                           onClick={() => setHowItWorksOpen(false)}
-                          className={`flex items-start gap-3 p-2.5 rounded-xl transition-colors ${
+                          className={`flex items-start gap-3 p-2 rounded-lg transition-colors ${
                             isActive
-                              ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400"
-                              : "hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200"
+                              ? "bg-primary/10 text-primary"
+                              : "hover:bg-surface-muted text-text"
                           }`}
                         >
-                          <div className="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
-                            <ItemIcon className="w-4 h-4" />
+                          <div className="w-7 h-7 rounded-md bg-surface-muted text-primary flex items-center justify-center shrink-0 mt-0.5 border border-border">
+                            <ItemIcon className="w-3.5 h-3.5" />
                           </div>
                           <div className="min-w-0">
-                            <div className="text-xs font-semibold">{item.title}</div>
-                            <div className="text-[11px] text-slate-500 dark:text-slate-400 leading-snug line-clamp-2">
+                            <div className="text-xs font-medium">{item.title}</div>
+                            <div className="text-[11px] text-text-muted leading-tight line-clamp-2">
                               {item.desc}
                             </div>
                           </div>
@@ -315,12 +315,12 @@ export function Navbar() {
             {/* Quick Scheme Search (Cmd+K) */}
             <button
               onClick={() => setSearchModalOpen(true)}
-              className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-800 text-xs font-medium text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors whitespace-nowrap"
+              className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-border text-xs font-normal text-text-muted hover:text-text hover:bg-surface-muted transition-colors whitespace-nowrap"
               aria-label="Search Mutual Funds"
             >
               <Search className="w-3.5 h-3.5 shrink-0" />
               <span className="hidden xl:inline whitespace-nowrap">Search scheme</span>
-              <kbd className="inline-block px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-[10px] font-mono border border-slate-300 dark:border-slate-700 whitespace-nowrap">
+              <kbd className="inline-block px-1.5 py-0.5 rounded bg-surface-muted text-[10px] font-mono border border-border whitespace-nowrap text-text-muted">
                 ⌘K
               </kbd>
             </button>
@@ -329,24 +329,24 @@ export function Navbar() {
             <button
               onClick={toggleCompact}
               title={compact ? "Switch to standard (₹ 12,34,567)" : "Switch to compact (Lakhs / Crores)"}
-              className="px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-800 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors whitespace-nowrap"
+              className="px-2.5 py-1.5 rounded-lg border border-border text-xs font-medium text-text hover:bg-surface-muted transition-colors whitespace-nowrap"
             >
-              <span className="whitespace-nowrap font-semibold"><span className="text-emerald-600 dark:text-emerald-400 font-bold">₹</span> L/Cr</span>
+              <span className="whitespace-nowrap"><span className="text-primary font-semibold">₹</span> L/Cr</span>
             </button>
 
             {/* Dark/Light Theme Toggle */}
             <button
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-              className="p-2 rounded-xl border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors whitespace-nowrap shrink-0"
+              className="p-2 rounded-lg border border-border text-text-muted hover:text-text hover:bg-surface-muted transition-colors whitespace-nowrap shrink-0"
               aria-label="Toggle color theme"
             >
-              <Sun className="w-4 h-4 hidden dark:block text-amber-400 shrink-0" />
-              <Moon className="w-4 h-4 block dark:hidden text-slate-700 shrink-0" />
+              <Sun className="w-3.5 h-3.5 hidden dark:block text-warning shrink-0" />
+              <Moon className="w-3.5 h-3.5 block dark:hidden text-text shrink-0" />
             </button>
 
             {/* Auth State Button / Dropdown (Desktop) */}
             {authLoading ? (
-              <div className="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-800 animate-pulse shrink-0" />
+              <div className="w-8 h-8 rounded-full bg-surface-muted border border-border animate-pulse shrink-0" />
             ) : user ? (
               <div className="relative" ref={userMenuRef}>
                 <button
@@ -354,32 +354,32 @@ export function Navbar() {
                   onClick={() => setUserMenuOpen(!userMenuOpen)}
                   aria-expanded={userMenuOpen}
                   aria-label="User account menu"
-                  className="w-8 h-8 rounded-full bg-gradient-to-tr from-emerald-600 to-teal-500 text-white font-bold text-xs flex items-center justify-center shadow-sm shrink-0 hover:ring-2 hover:ring-emerald-500/30 transition-all"
+                  className="w-8 h-8 rounded-full bg-primary text-primary-foreground font-semibold text-xs flex items-center justify-center shrink-0 hover:opacity-90 transition-opacity"
                 >
                   {userInitials}
                 </button>
 
                 {userMenuOpen && (
-                  <div className="absolute right-0 mt-2 w-56 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl p-1.5 z-50 animate-in fade-in zoom-in-95 duration-150">
-                    <div className="px-3 py-2 border-b border-slate-100 dark:border-slate-800">
-                      <div className="text-xs font-bold text-slate-900 dark:text-white truncate">
+                  <div className="absolute right-0 mt-2 w-56 rounded-xl bg-surface border border-border shadow-lg p-1.5 z-50 animate-in fade-in zoom-in-95 duration-150">
+                    <div className="px-3 py-2 border-b border-border">
+                      <div className="text-xs font-semibold text-text truncate">
                         {userName}
                       </div>
-                      <div className="text-[11px] text-slate-400 truncate">{user.email}</div>
+                      <div className="text-[11px] text-text-muted truncate">{user.email}</div>
                     </div>
                     <div className="py-1 space-y-0.5">
                       <Link
                         href="/account"
                         onClick={() => setUserMenuOpen(false)}
-                        className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                        className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium text-text hover:bg-surface-muted transition-colors"
                       >
-                        <User className="w-3.5 h-3.5 text-emerald-500" />
+                        <User className="w-3.5 h-3.5 text-primary" />
                         <span>Account</span>
                       </Link>
                       <button
                         type="button"
                         onClick={handleSignOut}
-                        className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors"
+                        className="w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium text-danger hover:bg-danger-bg transition-colors"
                       >
                         <LogOut className="w-3.5 h-3.5" />
                         <span>Sign out</span>
@@ -389,16 +389,16 @@ export function Navbar() {
                 )}
               </div>
             ) : (
-              <div className="hidden sm:flex items-center gap-1.5 shrink-0">
+              <div className="hidden sm:flex items-center gap-2 shrink-0">
                 <Link
                   href="/login"
-                  className="px-2.5 py-1.5 rounded-xl text-xs font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors whitespace-nowrap"
+                  className="px-3 py-1.5 rounded-lg text-xs font-medium text-text hover:bg-surface-muted transition-colors whitespace-nowrap"
                 >
                   Sign in
                 </Link>
                 <Link
                   href="/register"
-                  className="px-3 py-1.5 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 shadow-sm shadow-emerald-500/20 transition-all whitespace-nowrap"
+                  className="px-3 py-1.5 rounded-lg text-xs font-semibold text-primary-foreground bg-primary hover:bg-primary-hover transition-colors whitespace-nowrap shadow-sm"
                 >
                   Get started
                 </Link>
@@ -408,7 +408,7 @@ export function Navbar() {
             {/* Mobile Hamburger Toggle */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="lg:hidden p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors shrink-0"
+              className="lg:hidden p-2 rounded-lg text-text-muted hover:text-text hover:bg-surface-muted transition-colors shrink-0"
               aria-label="Toggle navigation menu"
             >
               {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -418,7 +418,7 @@ export function Navbar() {
 
         {/* Mobile Dropdown Sheet Menu */}
         {mobileMenuOpen && (
-          <div className="lg:hidden border-t border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-slate-950/95 backdrop-blur-md px-4 py-3 space-y-1 shadow-xl max-h-[calc(100vh-4rem)] overflow-y-auto">
+          <div className="lg:hidden border-t border-border bg-surface px-4 py-3 space-y-1 shadow-lg max-h-[calc(100vh-4rem)] overflow-y-auto">
             {primaryNavLinks.map((link) => {
               const Icon = link.icon;
               const isActive = pathname === link.href;
@@ -427,24 +427,24 @@ export function Navbar() {
                   key={link.href}
                   href={link.href}
                   onClick={() => setMobileMenuOpen(false)}
-                  className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium whitespace-nowrap transition-colors ${
+                  className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${
                     isActive
-                      ? "text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 font-semibold"
-                      : "text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
+                      ? "text-primary bg-primary/10 font-semibold"
+                      : "text-text hover:bg-surface-muted"
                   }`}
                 >
-                  <Icon className="w-4 h-4 shrink-0" />
+                  <Icon className="w-4 h-4 shrink-0 text-text-muted" />
                   <span>{link.label}</span>
                 </Link>
               );
             })}
 
             {/* Mobile Accordion for "How it works" */}
-            <div className="pt-2 border-t border-slate-200 dark:border-slate-800">
+            <div className="pt-2 border-t border-border">
               <button
                 type="button"
                 onClick={() => setMobileAccordionOpen(!mobileAccordionOpen)}
-                className="w-full flex items-center justify-between px-3 py-2 rounded-xl text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
+                className="w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium text-text hover:bg-surface-muted"
               >
                 <span>How it works</span>
                 <ChevronDown
@@ -464,14 +464,14 @@ export function Navbar() {
                           setMobileMenuOpen(false);
                           setMobileAccordionOpen(false);
                         }}
-                        className="flex items-start gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300"
+                        className="flex items-start gap-2.5 p-2 rounded-lg hover:bg-surface-muted text-text"
                       >
-                        <div className="w-6 h-6 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
+                        <div className="w-6 h-6 rounded-md bg-surface-muted border border-border text-primary flex items-center justify-center shrink-0 mt-0.5">
                           <ItemIcon className="w-3.5 h-3.5" />
                         </div>
                         <div>
                           <div className="text-xs font-medium">{item.title}</div>
-                          <div className="text-[10px] text-slate-400 line-clamp-1">{item.desc}</div>
+                          <div className="text-[10px] text-text-muted line-clamp-1">{item.desc}</div>
                         </div>
                       </Link>
                     );
@@ -481,15 +481,15 @@ export function Navbar() {
             </div>
 
             {/* Mobile Auth Actions */}
-            <div className="pt-3 border-t border-slate-200 dark:border-slate-800">
+            <div className="pt-3 border-t border-border">
               {user ? (
                 <div className="space-y-1">
                   <Link
                     href="/account"
                     onClick={() => setMobileMenuOpen(false)}
-                    className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
+                    className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium text-text hover:bg-surface-muted"
                   >
-                    <User className="w-4 h-4 text-emerald-500" />
+                    <User className="w-4 h-4 text-primary" />
                     <span>My Account ({user.email})</span>
                   </Link>
                   <button
@@ -498,25 +498,25 @@ export function Navbar() {
                       handleSignOut();
                       setMobileMenuOpen(false);
                     }}
-                    className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40"
+                    className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium text-danger hover:bg-danger-bg"
                   >
                     <LogOut className="w-4 h-4" />
                     <span>Sign out</span>
                   </button>
                 </div>
               ) : (
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 pt-1">
                   <Link
                     href="/login"
                     onClick={() => setMobileMenuOpen(false)}
-                    className="flex-1 py-2 text-center rounded-xl text-xs font-semibold border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
+                    className="flex-1 py-2 text-center rounded-lg text-xs font-medium border border-border text-text hover:bg-surface-muted"
                   >
                     Sign in
                   </Link>
                   <Link
                     href="/register"
                     onClick={() => setMobileMenuOpen(false)}
-                    className="flex-1 py-2 text-center rounded-xl text-xs font-bold text-white bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500"
+                    className="flex-1 py-2 text-center rounded-lg text-xs font-semibold text-primary-foreground bg-primary hover:bg-primary-hover shadow-sm"
                   >
                     Get started
                   </Link>
@@ -529,35 +529,36 @@ export function Navbar() {
 
       {/* Command Palette / Search Modal */}
       {searchModalOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-sm flex items-start justify-center pt-20 px-4">
-          <div className="w-full max-w-xl bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
-            <div className="p-4 border-b border-slate-200 dark:border-slate-800 flex items-center gap-3">
-              <Search className="w-5 h-5 text-slate-400" />
+        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-start justify-center pt-20 px-4">
+          <div className="w-full max-w-xl bg-surface text-text rounded-xl shadow-xl border border-border overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+            <div className="p-4 border-b border-border flex items-center gap-3">
+              <Search className="w-4 h-4 text-text-muted" />
               <input
                 type="text"
                 autoFocus
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search real mutual fund scheme (e.g. Parag Parikh, HDFC, Mirae)..."
-                className="w-full bg-transparent border-0 focus:outline-none text-slate-900 dark:text-white placeholder-slate-400 text-sm"
+                placeholder="Search mutual fund schemes (e.g. Parag Parikh, HDFC)..."
+                className="w-full bg-transparent border-0 focus:outline-none text-text placeholder-text-muted text-sm"
               />
               <button
                 onClick={() => setSearchModalOpen(false)}
-                className="p-1 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                className="p-1 rounded-md text-text-muted hover:text-text"
+                aria-label="Close search"
               >
-                <X className="w-5 h-5" />
+                <X className="w-4 h-4" />
               </button>
             </div>
 
             <div className="max-h-80 overflow-y-auto p-2">
               {isSearching && (
-                <div className="p-4 text-center text-xs text-slate-400">
-                  Searching live database via AMFI...
+                <div className="p-4 text-center text-xs text-text-muted">
+                  Searching live database...
                 </div>
               )}
 
               {!isSearching && searchResults.length === 0 && searchQuery.length >= 2 && (
-                <div className="p-4 text-center text-xs text-slate-400">
+                <div className="p-4 text-center text-xs text-text-muted">
                   No mutual fund schemes found matching &quot;{searchQuery}&quot;.
                 </div>
               )}
@@ -569,26 +570,26 @@ export function Navbar() {
                     setSearchModalOpen(false);
                     router.push(`/mf/${item.schemeCode}`);
                   }}
-                  className="w-full text-left p-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/80 transition-colors flex items-center justify-between group"
+                  className="w-full text-left p-3 rounded-lg hover:bg-surface-muted transition-colors flex items-center justify-between group"
                 >
                   <div className="truncate pr-3">
-                    <div className="text-sm font-medium text-slate-900 dark:text-slate-100 truncate group-hover:text-emerald-500">
+                    <div className="text-sm font-medium text-text truncate group-hover:text-primary">
                       {item.schemeName}
                     </div>
-                    <div className="text-xs text-slate-400 flex items-center gap-2 mt-0.5">
-                      <span className="px-1.5 py-0.2 rounded bg-slate-200 dark:bg-slate-800 text-[10px] font-mono">
+                    <div className="text-xs text-text-muted flex items-center gap-2 mt-0.5">
+                      <span className="px-1.5 py-0.2 rounded bg-surface-muted border border-border text-[10px] font-mono">
                         {item.planType}
                       </span>
                     </div>
                   </div>
-                  <ExternalLink className="w-4 h-4 text-slate-400 opacity-0 group-hover:opacity-100 shrink-0" />
+                  <ExternalLink className="w-4 h-4 text-text-muted opacity-0 group-hover:opacity-100 shrink-0" />
                 </button>
               ))}
 
               {searchQuery.length < 2 && (
-                <div className="p-6 text-center text-xs text-slate-400 space-y-2">
+                <div className="p-6 text-center text-xs text-text-muted space-y-1">
                   <p>Try searching: <strong>Parag Parikh Flexi Cap</strong>, <strong>Mirae Large Cap</strong>, or <strong>SBI Bluechip</strong>.</p>
-                  <p className="text-[11px] text-slate-400">Live search queries 40,000+ AMFI mutual fund schemes directly from official data feeds.</p>
+                  <p className="text-[11px] text-text-muted">Queries thousands of AMFI mutual fund schemes directly.</p>
                 </div>
               )}
             </div>

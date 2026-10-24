@@ -8,10 +8,10 @@ import {
   PolarAngleAxis,
   PolarRadiusAxis,
   Radar,
-  Legend,
   Tooltip,
 } from "recharts";
 import { InstrumentMetrics } from "@/lib/finance/types";
+import { getShortInstrumentName, getInstrumentColor } from "@/lib/chart-colors";
 
 interface InstrumentRadarProps {
   instruments: InstrumentMetrics[];
@@ -20,9 +20,9 @@ interface InstrumentRadarProps {
 export function InstrumentRadar({ instruments }: InstrumentRadarProps) {
   const dimensions = [
     { key: "returns", label: "Returns" },
-    { key: "safety", label: "Capital Safety" },
+    { key: "safety", label: "Safety" },
     { key: "liquidity", label: "Liquidity" },
-    { key: "taxEfficiency", label: "Tax Efficiency" },
+    { key: "taxEfficiency", label: "Tax efficiency" },
     { key: "flexibility", label: "Flexibility" },
     { key: "transparency", label: "Transparency" },
   ];
@@ -30,52 +30,74 @@ export function InstrumentRadar({ instruments }: InstrumentRadarProps) {
   const radarData = dimensions.map((dim) => {
     const row: any = { dimension: dim.label };
     instruments.forEach((inst) => {
-      row[inst.name] = (inst.radarScores as any)[dim.key] ?? 50;
+      const shortName = getShortInstrumentName(inst.name, inst.type);
+      row[shortName] = (inst.radarScores as any)[dim.key] ?? 50;
     });
     return row;
   });
 
-  const colors = ["#10B981", "#3B82F6", "#F59E0B", "#EC4899"];
-
   return (
-    <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm min-h-[360px] flex flex-col justify-between">
+    <div className="bg-surface rounded-xl border border-border p-5 shadow-sm min-h-[340px] flex flex-col justify-between transition-colors">
       <div>
-        <h3 className="font-heading font-bold text-base text-slate-900 dark:text-white">
-          Multi-Dimensional Radar Profile
+        <h3 className="font-semibold text-base text-text">
+          6-Axis balance
         </h3>
-        <p className="text-xs text-slate-500 dark:text-slate-400">
-          6-Axis Trade-off Balance (0 to 100). Highlights compromises in safety, liquidity, and transparency.
+        <p className="text-xs text-text-muted">
+          Multi-dimensional trade-off profile (0 to 100) across safety, returns, and liquidity.
         </p>
       </div>
 
-      <div className="h-64 w-full">
+      <div className="h-72 w-full">
         <ResponsiveContainer width="100%" height="100%">
-          <RadarChart cx="50%" cy="50%" outerRadius="70%" data={radarData}>
-            <PolarGrid stroke="#334155" opacity={0.25} />
-            <PolarAngleAxis dataKey="dimension" stroke="#94a3b8" fontSize={10} />
-            <PolarRadiusAxis angle={30} domain={[0, 100]} stroke="#64748b" fontSize={9} />
-            {instruments.map((inst, idx) => (
-              <Radar
-                key={inst.id}
-                name={inst.name}
-                dataKey={inst.name}
-                stroke={colors[idx % colors.length]}
-                fill={colors[idx % colors.length]}
-                fillOpacity={0.25}
-              />
-            ))}
+          <RadarChart cx="50%" cy="50%" outerRadius="65%" data={radarData}>
+            <PolarGrid stroke="currentColor" className="text-border" opacity={0.6} />
+            <PolarAngleAxis dataKey="dimension" stroke="currentColor" className="text-text-muted" fontSize={11} />
+            <PolarRadiusAxis angle={30} domain={[0, 100]} stroke="currentColor" className="text-text-muted/60" fontSize={9} />
+            {instruments.map((inst, idx) => {
+              const shortName = getShortInstrumentName(inst.name, inst.type);
+              const color = getInstrumentColor(idx);
+              return (
+                <Radar
+                  key={inst.id}
+                  name={shortName}
+                  dataKey={shortName}
+                  stroke={color}
+                  fill={color}
+                  fillOpacity={0.2}
+                />
+              );
+            })}
             <Tooltip
-              contentStyle={{
-                backgroundColor: "#0f172a",
-                borderColor: "#334155",
-                borderRadius: "0.75rem",
-                fontSize: "11px",
-                color: "#f8fafc",
+              content={({ payload, label }) => {
+                if (!payload || payload.length === 0) return null;
+                return (
+                  <div className="bg-surface text-text p-2.5 rounded-lg border border-border text-xs space-y-1 shadow-md">
+                    <div className="font-semibold text-text">{label}</div>
+                    {payload.map((p: any, idx: number) => (
+                      <div key={idx} className="flex justify-between gap-3">
+                        <span className="flex items-center gap-1.5 text-text-muted">
+                          <span className="w-2 h-2 rounded-full" style={{ backgroundColor: p.color }} />
+                          <span>{p.name}:</span>
+                        </span>
+                        <span className="font-semibold tabular-nums text-text">{p.value}/100</span>
+                      </div>
+                    ))}
+                  </div>
+                );
               }}
             />
-            <Legend verticalAlign="bottom" wrapperStyle={{ fontSize: "11px", paddingTop: "12px" }} />
           </RadarChart>
         </ResponsiveContainer>
+      </div>
+
+      {/* Single-row legend */}
+      <div className="pt-1 flex flex-wrap items-center justify-center gap-4 text-xs">
+        {instruments.map((inst, idx) => (
+          <div key={inst.id} className="flex items-center gap-1.5">
+            <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: getInstrumentColor(idx) }} />
+            <span className="text-text-muted font-medium">{getShortInstrumentName(inst.name, inst.type)}</span>
+          </div>
+        ))}
       </div>
     </div>
   );

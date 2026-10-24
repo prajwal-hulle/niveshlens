@@ -27,19 +27,15 @@ export default function PpfPage() {
   const ppfData = calculatePpfSchedule(annualDeposit, notifiedRate, 15);
 
   return (
-    <div className="w-full space-y-8">
+    <div className="w-full space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="space-y-1">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20">
-            <Shield className="w-3.5 h-3.5 text-emerald-500" />
-            <span>Sovereign Small Savings</span>
-          </div>
-          <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-            Public Provident Fund (PPF) Architecture
+          <h1 className="text-2xl sm:text-3xl font-semibold text-text tracking-tight">
+            Public Provident Fund (PPF)
           </h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400 max-w-2xl">
-            15-year statutory lock-in, quarterly notified interest, EEE tax exemption, and partial withdrawal regulations.
+          <p className="text-xs sm:text-sm text-text-muted max-w-2xl">
+            15-year statutory lock-in, quarterly notified interest, EEE tax exemption, and partial withdrawal guidelines.
           </p>
         </div>
 
@@ -52,54 +48,54 @@ export default function PpfPage() {
         )}
       </div>
 
-      {/* Rules Banner (Correction #8) */}
+      {/* Rules Banner */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
-        <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-1.5">
-          <div className="flex items-center gap-1.5 font-bold text-slate-900 dark:text-white">
-            <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-            <span>Statutory ₹1.5L Annual Cap</span>
+        <div className="p-4 rounded-xl bg-surface border border-border space-y-1.5 transition-colors">
+          <div className="flex items-center gap-1.5 font-medium text-text">
+            <CheckCircle2 className="w-4 h-4 text-primary" />
+            <span>₹1.5L Annual deposit cap</span>
           </div>
-          <p className="text-slate-500 leading-relaxed">
+          <p className="text-text-muted leading-relaxed">
             Minimum deposit is ₹500/year; maximum is ₹1,50,000 across all accounts held by an individual. Any excess deposit earns 0% interest.
           </p>
         </div>
 
-        <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-1.5">
-          <div className="flex items-center gap-1.5 font-bold text-slate-900 dark:text-white">
-            <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-            <span>Loan Allowed: Years 3 to 6</span>
+        <div className="p-4 rounded-xl bg-surface border border-border space-y-1.5 transition-colors">
+          <div className="flex items-center gap-1.5 font-medium text-text">
+            <CheckCircle2 className="w-4 h-4 text-primary" />
+            <span>Loan allowed: Years 3 to 6</span>
           </div>
-          <p className="text-slate-500 leading-relaxed">
-            Borrow up to 25% of the balance at the end of the second preceding financial year. Interest charged is 1% above PPF rate.
+          <p className="text-text-muted leading-relaxed">
+            Borrow up to 25% of the balance at the end of the second preceding financial year. Interest charged is 1% above notified PPF rate.
           </p>
         </div>
 
-        <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-1.5">
-          <div className="flex items-center gap-1.5 font-bold text-slate-900 dark:text-white">
-            <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-            <span>Partial Withdrawal: Year 7 Onwards</span>
+        <div className="p-4 rounded-xl bg-surface border border-border space-y-1.5 transition-colors">
+          <div className="flex items-center gap-1.5 font-medium text-text">
+            <CheckCircle2 className="w-4 h-4 text-primary" />
+            <span>Partial withdrawal: Year 7+</span>
           </div>
-          <p className="text-slate-500 leading-relaxed">
+          <p className="text-text-muted leading-relaxed">
             Capped at 50% of the balance at the end of the 4th preceding year or preceding year, whichever is lower.
           </p>
         </div>
       </div>
 
       {/* Interactive 15-Year Schedule */}
-      <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm space-y-5">
+      <div className="bg-surface rounded-xl border border-border p-5 shadow-sm space-y-4 transition-colors">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h3 className="font-heading font-bold text-base text-slate-900 dark:text-white">
-              Official 15-Year Trajectory Schedule
+            <h3 className="font-semibold text-base text-text">
+              15-Year trajectory schedule
             </h3>
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-text-muted">
               Compounded annually on March 31st at the notified rate of {notifiedRate}%
             </p>
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="text-xs font-semibold text-slate-600 dark:text-slate-400">
-              Annual Deposit:
+            <span className="text-xs font-medium text-text-muted">
+              Annual deposit:
             </span>
             <input
               type="number"
@@ -108,7 +104,7 @@ export default function PpfPage() {
               step={5000}
               value={annualDeposit}
               onChange={(e) => setAnnualDeposit(Math.min(150000, Number(e.target.value)))}
-              className="px-3 py-1.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-transparent text-xs font-bold w-32 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+              className="px-3 py-1.5 rounded-lg border border-border bg-surface text-xs font-medium text-text w-32 focus:ring-1 focus:ring-primary focus:outline-none"
             />
           </div>
         </div>
@@ -116,47 +112,47 @@ export default function PpfPage() {
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs border-collapse">
             <thead>
-              <tr className="bg-slate-50 dark:bg-slate-950/60 border-b border-slate-200 dark:border-slate-800 text-[11px] font-semibold text-slate-500 uppercase">
+              <tr className="bg-surface-muted border-b border-border text-[11px] font-medium text-text-muted">
                 <th className="p-3">Year</th>
                 <th className="p-3">Opening (₹)</th>
                 <th className="p-3">Deposit (₹)</th>
-                <th className="p-3">Interest Earned (₹)</th>
-                <th className="p-3 font-bold text-slate-900 dark:text-white">Closing Balance (₹)</th>
-                <th className="p-3">Max Withdrawal Allowed</th>
-                <th className="p-3">Loan Allowed</th>
+                <th className="p-3">Interest (₹)</th>
+                <th className="p-3 font-semibold text-text">Closing (₹)</th>
+                <th className="p-3">Max withdrawal</th>
+                <th className="p-3">Loan allowed</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+            <tbody className="divide-y divide-border">
               {ppfData.schedule.map((row) => (
                 <tr
                   key={row.year}
-                  className={row.year === 15 ? "bg-emerald-500/10 font-bold" : "hover:bg-slate-50/50 dark:hover:bg-slate-950/20"}
+                  className={row.year === 15 ? "bg-primary/5 font-semibold text-text" : "hover:bg-surface-muted/50"}
                 >
-                  <td className="p-3 font-medium">Year {row.year}</td>
-                  <td className="p-3 tabular-nums">{format(row.openingBalance)}</td>
-                  <td className="p-3 tabular-nums">{format(row.deposit)}</td>
-                  <td className="p-3 tabular-nums text-emerald-600 dark:text-emerald-400">
+                  <td className="p-3 font-medium text-text">Year {row.year}</td>
+                  <td className="p-3 tabular-nums text-text-muted">{format(row.openingBalance)}</td>
+                  <td className="p-3 tabular-nums text-text-muted">{format(row.deposit)}</td>
+                  <td className="p-3 tabular-nums text-primary font-medium">
                     +{format(row.interestEarned)}
                   </td>
-                  <td className="p-3 tabular-nums font-bold text-slate-900 dark:text-white">
+                  <td className="p-3 tabular-nums font-semibold text-text">
                     {format(row.closingBalance)}
                   </td>
                   <td className="p-3 tabular-nums">
                     {row.isWithdrawalEligible ? (
-                      <span className="font-semibold text-blue-600 dark:text-blue-400">
+                      <span className="font-medium text-primary">
                         {format(row.maxWithdrawalAllowed)}
                       </span>
                     ) : (
-                      <span className="text-slate-400 text-[10px]">Locked</span>
+                      <span className="text-text-muted text-[10px]">Locked</span>
                     )}
                   </td>
                   <td className="p-3 tabular-nums">
                     {row.isLoanEligible ? (
-                      <span className="font-semibold text-amber-600 dark:text-amber-400">
+                      <span className="font-medium text-warning">
                         {format(row.loanAllowed)}
                       </span>
                     ) : (
-                      <span className="text-slate-400 text-[10px]">—</span>
+                      <span className="text-text-muted text-[10px]">—</span>
                     )}
                   </td>
                 </tr>
@@ -165,15 +161,15 @@ export default function PpfPage() {
           </table>
         </div>
 
-        <div className="pt-4 border-t border-slate-200 dark:border-slate-800 flex flex-wrap items-center justify-between gap-4 text-xs">
+        <div className="pt-4 border-t border-border flex flex-wrap items-center justify-between gap-4 text-xs text-text-muted">
           <div>
-            Total Invested: <strong>{format(ppfData.totalInvested)}</strong>
+            Total invested: <strong className="text-text font-semibold">{format(ppfData.totalInvested)}</strong>
           </div>
           <div>
-            Total Interest Earned: <strong className="text-emerald-600 dark:text-emerald-400">+{format(ppfData.totalInterest)}</strong>
+            Total interest earned: <strong className="text-primary font-semibold">+{format(ppfData.totalInterest)}</strong>
           </div>
           <div>
-            Maturity Corpus (15 Yrs): <strong className="text-base text-emerald-600 dark:text-emerald-400 font-extrabold">{format(ppfData.maturityCorpus)}</strong>
+            Maturity corpus (15 Yrs): <strong className="text-sm text-primary font-semibold">{format(ppfData.maturityCorpus)}</strong>
           </div>
         </div>
       </div>

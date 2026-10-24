@@ -121,15 +121,11 @@ export default function LearnPage() {
   return (
     <div className="w-full space-y-8">
       <div className="max-w-3xl mx-auto space-y-2">
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20">
-          <BookOpen className="w-3.5 h-3.5 text-emerald-500" />
-          <span>Financial Glossary</span>
-        </div>
-        <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-          Financial Terms Explained
+        <h1 className="text-2xl sm:text-3xl font-semibold text-text tracking-tight">
+          Financial glossary
         </h1>
-        <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
-          Plain-English definitions of core financial concepts without jargon, formulas, or sales pitches.
+        <p className="text-xs sm:text-sm text-text-muted leading-relaxed">
+          Plain-English definitions of core investment concepts.
         </p>
       </div>
 
@@ -140,31 +136,31 @@ export default function LearnPage() {
           return (
             <div
               key={item.id}
-              className="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden transition-colors"
+              className="rounded-xl bg-surface border border-border shadow-sm overflow-hidden transition-colors"
             >
               <button
                 type="button"
                 onClick={() => toggleTerm(item.id)}
                 aria-expanded={isOpen}
-                className="w-full p-4 sm:p-5 flex items-center justify-between gap-3 text-left hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors"
+                className="w-full p-4 flex items-center justify-between gap-3 text-left hover:bg-surface-muted transition-colors"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold shrink-0">
-                    <Icon className="w-4 h-4" />
+                  <div className="w-7 h-7 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                    <Icon className="w-3.5 h-3.5" />
                   </div>
-                  <h3 className="font-heading font-bold text-sm sm:text-base text-slate-900 dark:text-white">
+                  <h3 className="font-medium text-sm text-text">
                     {item.term}
                   </h3>
                 </div>
                 <ChevronDown
-                  className={`w-4 h-4 text-slate-400 transition-transform duration-200 shrink-0 ${
+                  className={`w-4 h-4 text-text-muted transition-transform duration-200 shrink-0 ${
                     isOpen ? "rotate-180" : ""
                   }`}
                 />
               </button>
 
               {isOpen && (
-                <div className="px-5 pb-5 pt-1 border-t border-slate-100 dark:border-slate-800/60 text-xs sm:text-sm leading-relaxed text-slate-600 dark:text-slate-300 space-y-1.5 animate-in fade-in duration-150">
+                <div className="px-4 pb-4 pt-1 border-t border-border text-xs sm:text-sm leading-relaxed text-text-muted space-y-1.5 animate-in fade-in duration-150">
                   <p>{item.line1}</p>
                   <p>{item.line2}</p>
                 </div>

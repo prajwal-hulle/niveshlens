@@ -14,11 +14,36 @@ import { TradeoffCards } from "@/components/compare/tradeoff-cards";
 import { InsuranceAdequacyPanel } from "@/components/compare/insurance-adequacy-panel";
 import { ShareExportBar } from "@/components/compare/share-export-bar";
 import { DEFAULT_WEIGHTS, ScoringWeights } from "@/lib/scoring";
-import { UserProfile } from "@/lib/finance/types";
-import { Scale, Loader2, Sparkles, AlertCircle } from "lucide-react";
+import { UserProfile, InstrumentMetrics } from "@/lib/finance/types";
+import { Scale, Loader2, AlertCircle, Table, BarChart2, AlertTriangle, ShieldCheck } from "lucide-react";
+import { getShortInstrumentName, getInstrumentColor } from "@/lib/chart-colors";
+import { formatPercent } from "@/lib/utils";
+
+type CompareTab = "table" | "charts" | "warnings" | "insurance-gap";
+type ChartView = "growth" | "scatter" | "radar" | "exit";
 
 function CompareContent() {
   const searchParams = useSearchParams();
+
+  // Tab state with hash sync
+  const [activeTab, setActiveTab] = useState<CompareTab>("table");
+  const [activeChartView, setActiveChartView] = useState<ChartView>("growth");
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const hash = window.location.hash.replace("#", "") as CompareTab;
+      if (["table", "charts", "warnings", "insurance-gap"].includes(hash)) {
+        setActiveTab(hash);
+      }
+    }
+  }, []);
+
+  const handleTabChange = (tab: CompareTab) => {
+    setActiveTab(tab);
+    if (typeof window !== "undefined") {
+      window.history.replaceState(null, "", `#${tab}`);
+    }
+  };
 
   // Parse user profile from query params with sensible defaults
   const profile: UserProfile = {
@@ -97,23 +122,19 @@ function CompareContent() {
   const availableInsurancePlans = ratesData?.insurance || [];
 
   return (
-    <div className="w-full space-y-8">
+    <div className="w-full space-y-6">
       {/* Header & Controls */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20 mb-2">
-            <Scale className="w-3.5 h-3.5" />
-            <span>Multi-Asset Comparator</span>
-          </div>
-          <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-            Investment Risk & Scheme Comparator
+          <h1 className="text-2xl sm:text-3xl font-semibold text-text tracking-tight">
+            Scheme comparator
           </h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-            Comparing returns, real inflation drag, liquidity, charges, and hidden trade-offs across your portfolio.
+          <p className="text-xs sm:text-sm text-text-muted mt-0.5">
+            Compare returns, tax drag, liquidity, charges, and trade-offs.
           </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-3">
+        <div className="flex items-center gap-2">
           <ScoringDrawer
             weights={customWeights}
             onChange={(w) => setCustomWeights(w)}
@@ -125,7 +146,7 @@ function CompareContent() {
       </div>
 
       {/* Instrument Selector Bar */}
-      <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800">
+      <div className="p-3.5 rounded-xl bg-surface border border-border">
         <InstrumentSelector
           selected={selectedInstruments}
           onChange={setSelectedInstruments}
@@ -134,29 +155,29 @@ function CompareContent() {
         />
       </div>
 
-      {/* Loading Skeleton */}
+      {/* Loading State */}
       {isLoading && (
-        <div className="p-12 text-center rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 space-y-3">
-          <Loader2 className="w-8 h-8 text-emerald-500 animate-spin mx-auto" />
-          <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">
-            Calculating precision cash flows & statistical percentiles...
+        <div className="p-12 text-center rounded-xl border border-border bg-surface space-y-3">
+          <Loader2 className="w-6 h-6 text-primary animate-spin mx-auto" />
+          <p className="text-sm font-medium text-text">
+            Calculating cash flows and percentiles...
           </p>
-          <p className="text-xs text-slate-400">
-            Evaluating historical rolling returns, marginal tax slabs, and Fisher real purchasing power.
+          <p className="text-xs text-text-muted">
+            Evaluating historical rolling returns, marginal tax brackets, and inflation drag.
           </p>
         </div>
       )}
 
       {/* Error State */}
       {isError && (
-        <div className="p-6 rounded-2xl border border-rose-500/30 bg-rose-50/50 dark:bg-rose-950/20 text-rose-800 dark:text-rose-300 text-xs flex items-center justify-between">
+        <div className="p-4 rounded-xl border border-danger/30 bg-danger/5 text-danger text-xs flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <AlertCircle className="w-5 h-5 text-rose-500 shrink-0" />
+            <AlertCircle className="w-4 h-4 shrink-0" />
             <span>Could not compute comparison. Ensure selected instruments have valid data.</span>
           </div>
           <button
             onClick={() => refetch()}
-            className="px-3 py-1.5 rounded-lg bg-rose-600 text-white font-bold hover:bg-rose-500"
+            className="px-3 py-1 rounded bg-danger text-white font-medium hover:bg-danger/90 text-xs"
           >
             Retry
           </button>
@@ -165,51 +186,234 @@ function CompareContent() {
 
       {/* Active Comparison Data */}
       {compareData && (
-        <div className="space-y-8 animate-in fade-in duration-200">
+        <div className="space-y-6">
           {profile.financialYear === "2026-27" && (
-            <div className="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-amber-900 dark:text-amber-300">
+            <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 text-xs text-amber-900 dark:text-amber-300">
               <div className="flex items-center gap-2">
-                <span className="font-bold text-sm">⚠️</span>
-                <div>
-                  <strong className="font-bold">FY 2026-27 Forward Projection:</strong>
-                  <span className="ml-1 text-slate-700 dark:text-slate-300">
-                    Results incorporate unnotified FY 2026-27 income tax slabs. Verify official notifications before making tax decisions.
-                  </span>
-                </div>
+                <span>⚠️</span>
+                <span>
+                  <strong>FY 2026-27 forward projection:</strong> Uses unnotified tax slabs. Verify before filing.
+                </span>
               </div>
               <a
                 href="https://www.incometax.gov.in"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-3 py-1.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-bold shrink-0 text-center transition-colors shadow-sm"
+                className="px-3 py-1 rounded-lg bg-amber-600 hover:bg-amber-500 text-white font-medium shrink-0 text-center transition-colors text-xs"
               >
-                Unverified projection – verify at incometax.gov.in
+                incometax.gov.in
               </a>
             </div>
           )}
 
-          {/* 1. Side-by-Side Analytical Metrics Table */}
-          <MetricsTable instruments={compareData.instruments} profile={profile} />
+          {/* 1. Summary Cards Row (1 compact card per instrument with horizontal scroll on mobile) */}
+          <div className="overflow-x-auto pb-1 -mx-4 px-4 sm:mx-0 sm:px-0">
+            <div className="flex sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-3 min-w-[640px] sm:min-w-0">
+              {compareData.instruments.map((inst: InstrumentMetrics, idx: number) => {
+                const shortName = getShortInstrumentName(inst.name, inst.type);
+                const color = getInstrumentColor(idx);
 
-          {/* 2. Projected Corpus Growth Line Chart */}
-          <ProjectionChart instruments={compareData.instruments} profile={profile} />
+                return (
+                  <div
+                    key={inst.id}
+                    className="flex-1 min-w-[200px] p-3.5 rounded-xl bg-surface border border-border space-y-2.5 shadow-sm transition-colors"
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-2 min-w-0">
+                        <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: color }} />
+                        <span className="font-semibold text-sm text-text truncate" title={inst.name}>
+                          {shortName}
+                        </span>
+                      </div>
+                      <span className="text-xs font-semibold text-primary shrink-0">
+                        {inst.compositeScore}/100
+                      </span>
+                    </div>
 
-          {/* 3. Insurance Adequacy Audit Panel (correction #12) */}
-          {compareData.insuranceAdequacy && (
-            <InsuranceAdequacyPanel adequacy={compareData.insuranceAdequacy} />
-          )}
-
-          {/* 4. Hidden Trade-Off Warning Detector */}
-          <TradeoffCards flags={compareData.tradeoffs} />
-
-          {/* 5. Visual Deep-Dives: Risk-Return Scatter, Radar Profile, and Exit Cost Bar Chart */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <RiskReturnScatter instruments={compareData.instruments} />
-            <InstrumentRadar instruments={compareData.instruments} />
-            <ExitCostChart instruments={compareData.instruments} profile={profile} />
+                    <div className="grid grid-cols-2 gap-2 text-xs pt-1 border-t border-border">
+                      <div>
+                        <div className="text-[11px] text-text-muted">Post-tax</div>
+                        <div className="font-medium text-text tabular-nums">
+                          {formatPercent(inst.postTaxReturnPct)}
+                        </div>
+                      </div>
+                      <div>
+                        <div className="text-[11px] text-text-muted">Real return</div>
+                        <div className={`font-semibold tabular-nums ${inst.realReturnPct < 0 ? "text-danger" : "text-primary"}`}>
+                          {formatPercent(inst.realReturnPct, 2, true)}
+                        </div>
+                      </div>
+                      <div>
+                        <div className="text-[11px] text-text-muted">Lock-in</div>
+                        <div className="font-medium text-text truncate">
+                          {inst.lockInPeriodMonths > 0 ? `${Math.round(inst.lockInPeriodMonths / 12)} yrs` : "None (T+2)"}
+                        </div>
+                      </div>
+                      <div>
+                        <div className="text-[11px] text-text-muted">Risk</div>
+                        <div className="font-medium text-text truncate">
+                          {inst.volatilityPct > 0 ? `${formatPercent(inst.volatilityPct)}` : "Guaranteed"}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
 
-          {/* 6. Save & Share Export Bar */}
+          {/* 2. Four Tabs: Table | Charts | Warnings | Insurance gap */}
+          <div className="space-y-4">
+            <div className="flex border-b border-border text-xs sm:text-sm font-medium gap-1 sm:gap-2">
+              <button
+                type="button"
+                onClick={() => handleTabChange("table")}
+                className={`flex items-center gap-1.5 px-3.5 py-2.5 border-b-2 transition-colors ${
+                  activeTab === "table"
+                    ? "border-primary text-primary font-semibold"
+                    : "border-transparent text-text-muted hover:text-text"
+                }`}
+              >
+                <Table className="w-4 h-4" />
+                <span>Table</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleTabChange("charts")}
+                className={`flex items-center gap-1.5 px-3.5 py-2.5 border-b-2 transition-colors ${
+                  activeTab === "charts"
+                    ? "border-primary text-primary font-semibold"
+                    : "border-transparent text-text-muted hover:text-text"
+                }`}
+              >
+                <BarChart2 className="w-4 h-4" />
+                <span>Charts</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleTabChange("warnings")}
+                className={`flex items-center gap-1.5 px-3.5 py-2.5 border-b-2 transition-colors ${
+                  activeTab === "warnings"
+                    ? "border-primary text-primary font-semibold"
+                    : "border-transparent text-text-muted hover:text-text"
+                }`}
+              >
+                <AlertTriangle className="w-4 h-4" />
+                <span>Warnings</span>
+                {compareData.tradeoffs?.length > 0 && (
+                  <span className="ml-1 px-1.5 py-0.2 rounded-full text-[10px] bg-warning/10 text-warning font-semibold">
+                    {compareData.tradeoffs.length}
+                  </span>
+                )}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleTabChange("insurance-gap")}
+                className={`flex items-center gap-1.5 px-3.5 py-2.5 border-b-2 transition-colors ${
+                  activeTab === "insurance-gap"
+                    ? "border-primary text-primary font-semibold"
+                    : "border-transparent text-text-muted hover:text-text"
+                }`}
+              >
+                <ShieldCheck className="w-4 h-4" />
+                <span>Insurance gap</span>
+                {compareData.insuranceAdequacy?.hasGap && (
+                  <span className="w-1.5 h-1.5 rounded-full bg-danger" />
+                )}
+              </button>
+            </div>
+
+            {/* Tab 1: Table */}
+            {activeTab === "table" && (
+              <MetricsTable instruments={compareData.instruments} profile={profile} />
+            )}
+
+            {/* Tab 2: Charts with Segmented Control */}
+            {activeTab === "charts" && (
+              <div className="space-y-4">
+                <div className="flex flex-wrap items-center gap-1.5 p-1 bg-surface-muted rounded-lg border border-border w-fit text-xs font-medium">
+                  <button
+                    type="button"
+                    onClick={() => setActiveChartView("growth")}
+                    className={`px-3 py-1.5 rounded transition-colors ${
+                      activeChartView === "growth"
+                        ? "bg-surface text-primary shadow-sm font-semibold"
+                        : "text-text-muted hover:text-text"
+                    }`}
+                  >
+                    Corpus growth
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setActiveChartView("scatter")}
+                    className={`px-3 py-1.5 rounded transition-colors ${
+                      activeChartView === "scatter"
+                        ? "bg-surface text-primary shadow-sm font-semibold"
+                        : "text-text-muted hover:text-text"
+                    }`}
+                  >
+                    Risk vs return
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setActiveChartView("radar")}
+                    className={`px-3 py-1.5 rounded transition-colors ${
+                      activeChartView === "radar"
+                        ? "bg-surface text-primary shadow-sm font-semibold"
+                        : "text-text-muted hover:text-text"
+                    }`}
+                  >
+                    6-Axis balance
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setActiveChartView("exit")}
+                    className={`px-3 py-1.5 rounded transition-colors ${
+                      activeChartView === "exit"
+                        ? "bg-surface text-primary shadow-sm font-semibold"
+                        : "text-text-muted hover:text-text"
+                    }`}
+                  >
+                    Cost of early exit
+                  </button>
+                </div>
+
+                {activeChartView === "growth" && (
+                  <ProjectionChart instruments={compareData.instruments} profile={profile} />
+                )}
+                {activeChartView === "scatter" && (
+                  <RiskReturnScatter instruments={compareData.instruments} />
+                )}
+                {activeChartView === "radar" && (
+                  <InstrumentRadar instruments={compareData.instruments} />
+                )}
+                {activeChartView === "exit" && (
+                  <ExitCostChart instruments={compareData.instruments} profile={profile} />
+                )}
+              </div>
+            )}
+
+            {/* Tab 3: Warnings */}
+            {activeTab === "warnings" && (
+              <TradeoffCards flags={compareData.tradeoffs} />
+            )}
+
+            {/* Tab 4: Insurance gap */}
+            {activeTab === "insurance-gap" && (
+              compareData.insuranceAdequacy ? (
+                <InsuranceAdequacyPanel adequacy={compareData.insuranceAdequacy} />
+              ) : (
+                <div className="p-6 rounded-xl border border-border bg-surface text-center text-xs text-text-muted">
+                  No insurance data needed for selected portfolio.
+                </div>
+              )
+            )}
+          </div>
+
+          {/* 3. Compact Save & Share Bar */}
           <ShareExportBar instruments={compareData.instruments} profile={profile} />
         </div>
       )}
@@ -219,7 +423,7 @@ function CompareContent() {
 
 export default function ComparePage() {
   return (
-    <React.Suspense fallback={<div className="max-w-7xl mx-auto px-4 py-20 text-center text-xs text-slate-500">Loading comparator...</div>}>
+    <React.Suspense fallback={<div className="max-w-6xl mx-auto px-4 py-20 text-center text-xs text-text-muted">Loading comparator...</div>}>
       <CompareContent />
     </React.Suspense>
   );

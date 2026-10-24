@@ -3,18 +3,13 @@
 import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
-import { FreshnessBadge } from "@/components/freshness-badge";
 import { useCurrency } from "@/components/currency-context";
 import { formatPercent } from "@/lib/utils";
 import {
   TrendingUp,
-  ShieldAlert,
-  Calendar,
   Percent,
   AlertCircle,
-  ExternalLink,
   Loader2,
-  CheckCircle2,
 } from "lucide-react";
 import {
   ResponsiveContainer,
@@ -44,9 +39,9 @@ export default function MfDetailPage() {
   if (isLoading) {
     return (
       <div className="max-w-6xl mx-auto px-4 py-20 text-center space-y-3">
-        <Loader2 className="w-8 h-8 text-emerald-500 animate-spin mx-auto" />
-        <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">
-          Fetching complete historical NAV series from api.mfapi.in...
+        <Loader2 className="w-6 h-6 text-primary animate-spin mx-auto" />
+        <p className="text-sm font-medium text-text">
+          Loading mutual fund historical data...
         </p>
       </div>
     );
@@ -55,10 +50,10 @@ export default function MfDetailPage() {
   if (isError || !fund) {
     return (
       <div className="max-w-3xl mx-auto px-4 py-16 text-center space-y-4">
-        <AlertCircle className="w-10 h-10 text-rose-500 mx-auto" />
-        <h2 className="text-xl font-bold text-slate-900 dark:text-white">Scheme Not Found</h2>
-        <p className="text-xs text-slate-500">
-          The mutual fund code {schemeCode} could not be retrieved from the AMFI database.
+        <AlertCircle className="w-8 h-8 text-danger mx-auto" />
+        <h2 className="text-xl font-semibold text-text">Scheme not found</h2>
+        <p className="text-xs text-text-muted">
+          The mutual fund code {schemeCode} could not be retrieved from the records.
         </p>
       </div>
     );
@@ -71,108 +66,109 @@ export default function MfDetailPage() {
   else if (timeline === "6M") displayHistory = rawHistory.slice(-130);
   else if (timeline === "1Y") displayHistory = rawHistory.slice(-250);
 
+  const isValidNavDate = fund.navDate && fund.navDate !== "Invalid Date" && !fund.navDate.includes("NaN");
+
   return (
-    <div className="w-full space-y-8">
-      {/* Scheme Title & Freshness */}
+    <div className="w-full space-y-6">
+      {/* Scheme Title */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div className="space-y-1">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-emerald-500/10 text-emerald-700 dark:text-emerald-400">
+            <span className="px-2 py-0.5 rounded text-[11px] font-medium bg-primary/10 text-primary">
               {fund.schemeCategory}
             </span>
-            <span className="px-2 py-0.5 rounded text-[11px] font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+            <span className="px-2 py-0.5 rounded text-[11px] font-medium bg-surface-muted text-text-muted border border-border">
               {fund.planType} Plan
             </span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-semibold text-text tracking-tight">
             {fund.schemeName}
           </h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400">{fund.fundHouse}</p>
+          <p className="text-xs text-text-muted">{fund.fundHouse}</p>
         </div>
 
-        {fund.navDate && (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20 shadow-sm shrink-0">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span>Live NAV · {fund.navDate}</span>
+        {isValidNavDate && (
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary border border-primary/20 shrink-0">
+            <span className="w-2 h-2 rounded-full bg-primary" />
+            <span>NAV as of {fund.navDate}</span>
           </span>
         )}
       </div>
 
-      {/* KPI Metric Cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-3">
-        <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-1">
-          <span className="text-[11px] text-slate-400">Current NAV:</span>
-          <div className="text-lg font-bold text-slate-900 dark:text-white tabular-nums">
+      {/* 2x3 KPI Metric Cards */}
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+        <div className="p-4 rounded-xl bg-surface border border-border space-y-1 transition-colors">
+          <span className="text-xs text-text-muted">Current NAV</span>
+          <div className="text-lg font-semibold text-text tabular-nums">
             ₹{fund.currentNav}
           </div>
-          <span className="text-[10px] text-slate-500">As of {fund.navDate}</span>
+          <span className="text-[11px] text-text-muted">{isValidNavDate ? fund.navDate : "Latest available"}</span>
         </div>
 
-        <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-1">
-          <span className="text-[11px] text-slate-400">3-Yr Trailing CAGR:</span>
-          <div className="text-lg font-bold text-emerald-600 dark:text-emerald-400 tabular-nums">
+        <div className="p-4 rounded-xl bg-surface border border-border space-y-1 transition-colors">
+          <span className="text-xs text-text-muted">3-Yr trailing CAGR</span>
+          <div className="text-lg font-semibold text-primary tabular-nums">
             {formatPercent(fund.cagr3Yr)}
           </div>
-          <span className="text-[10px] text-slate-500">Annualized</span>
+          <span className="text-[11px] text-text-muted">Annualized return</span>
         </div>
 
-        <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-1">
-          <span className="text-[11px] text-slate-400">Annualized Volatility:</span>
-          <div className="text-lg font-bold text-amber-600 tabular-nums">
+        <div className="p-4 rounded-xl bg-surface border border-border space-y-1 transition-colors">
+          <span className="text-xs text-text-muted">Annualized volatility</span>
+          <div className="text-lg font-semibold text-warning tabular-nums">
             {formatPercent(fund.volatility)}
           </div>
-          <span className="text-[10px] text-slate-500">250 Trading Days</span>
+          <span className="text-[11px] text-text-muted">250 trading days</span>
         </div>
 
-        <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-1">
-          <span className="text-[11px] text-slate-400">Peak Drawdown:</span>
-          <div className="text-lg font-bold text-rose-600 dark:text-rose-400 tabular-nums">
+        <div className="p-4 rounded-xl bg-surface border border-border space-y-1 transition-colors">
+          <span className="text-xs text-text-muted">Peak drawdown</span>
+          <div className="text-lg font-semibold text-danger tabular-nums">
             -{fund.maxDrawdownPct}%
           </div>
-          <span className="text-[10px] text-slate-500">Historical Maximum Drop</span>
+          <span className="text-[11px] text-text-muted">Historical maximum drop</span>
         </div>
 
-        <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-1">
-          <span className="text-[11px] text-slate-400">Sharpe Ratio:</span>
-          <div className="text-lg font-bold text-slate-900 dark:text-white tabular-nums">
+        <div className="p-4 rounded-xl bg-surface border border-border space-y-1 transition-colors">
+          <span className="text-xs text-text-muted">Sharpe ratio</span>
+          <div className="text-lg font-semibold text-text tabular-nums">
             {fund.sharpeRatio}
           </div>
-          <span className="text-[10px] text-slate-500">Risk-free = {fund.repoRateUsed}%</span>
+          <span className="text-[11px] text-text-muted">Risk-free repo rate = {fund.repoRateUsed}%</span>
         </div>
 
-        {/* AMFI Total Expense Ratio (Correction #4) */}
-        <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-1">
-          <span className="text-[11px] text-slate-400">Expense Ratio (TER):</span>
-          <div className="text-lg font-bold tabular-nums">
+        <div className="p-4 rounded-xl bg-surface border border-border space-y-1 transition-colors">
+          <span className="text-xs text-text-muted">Expense ratio (TER)</span>
+          <div className="text-lg font-semibold tabular-nums">
             {fund.expenseRatio !== null && fund.expenseRatio !== undefined ? (
-              <span className="text-slate-900 dark:text-white">{fund.expenseRatio}%</span>
+              <span className="text-text">{fund.expenseRatio}%</span>
             ) : (
-              <span className="text-xs text-slate-400 italic">TER unavailable</span>
+              <span className="text-xs text-text-muted italic">TER unavailable</span>
             )}
           </div>
-          <span className="text-[10px] text-slate-500">
+          <span className="text-[11px] text-text-muted">
             {fund.terSource || "AMFI Monthly Disclosure"}
           </span>
         </div>
       </div>
 
-      {/* NAV Historical Timeline Chart */}
-      <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm space-y-4">
+      {/* NAV Historical Timeline Chart (300px) */}
+      <div className="bg-surface rounded-xl border border-border p-5 shadow-sm space-y-4 transition-colors">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <h3 className="font-heading font-bold text-base text-slate-900 dark:text-white">
-            Net Asset Value (NAV) Performance Timeline
+          <h3 className="font-semibold text-base text-text">
+            NAV historical performance
           </h3>
 
-          <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl text-xs font-semibold">
+          <div className="flex items-center gap-1 bg-surface-muted p-1 rounded-lg border border-border text-xs font-medium self-end sm:self-auto">
             {(["1M", "6M", "1Y", "3Y", "5Y", "Max"] as const).map((t) => (
               <button
                 key={t}
                 type="button"
                 onClick={() => setTimeline(t)}
-                className={`px-2.5 py-1 rounded-lg transition-colors ${
+                className={`px-2.5 py-1 rounded transition-colors ${
                   timeline === t
-                    ? "bg-emerald-600 text-white shadow-sm"
-                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                    ? "bg-surface text-primary shadow-sm font-semibold"
+                    : "text-text-muted hover:text-text"
                 }`}
               >
                 {t}
@@ -181,26 +177,27 @@ export default function MfDetailPage() {
           </div>
         </div>
 
-        <div className="h-72 w-full pt-2">
+        <div className="h-[300px] w-full pt-2">
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={displayHistory} margin={{ top: 5, right: 20, left: 10, bottom: 5 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#334155" opacity={0.2} />
-              <XAxis dataKey="date" stroke="#94a3b8" fontSize={10} tickLine={false} />
-              <YAxis stroke="#94a3b8" fontSize={10} tickLine={false} domain={["auto", "auto"]} />
+            <LineChart data={displayHistory} margin={{ top: 5, right: 15, left: 10, bottom: 5 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="currentColor" className="text-border" opacity={0.6} />
+              <XAxis dataKey="date" stroke="currentColor" className="text-text-muted" fontSize={10} tickLine={false} />
+              <YAxis stroke="currentColor" className="text-text-muted" fontSize={10} tickLine={false} domain={["auto", "auto"]} />
               <Tooltip
-                contentStyle={{
-                  backgroundColor: "#0f172a",
-                  borderColor: "#334155",
-                  borderRadius: "0.75rem",
-                  fontSize: "12px",
-                  color: "#f8fafc",
+                content={({ payload, label }) => {
+                  if (!payload || payload.length === 0) return null;
+                  return (
+                    <div className="bg-surface text-text p-2.5 rounded-lg border border-border text-xs space-y-1 shadow-md">
+                      <div className="text-text-muted">{label}</div>
+                      <div className="font-semibold text-primary">₹{payload[0].value}</div>
+                    </div>
+                  );
                 }}
-                formatter={(val: any) => [`₹${val}`, "NAV"]}
               />
               <Line
                 type="monotone"
                 dataKey="nav"
-                stroke="#10B981"
+                stroke="#059669"
                 strokeWidth={2}
                 dot={false}
               />
@@ -210,52 +207,52 @@ export default function MfDetailPage() {
       </div>
 
       {/* Rolling Returns Percentile Audit */}
-      <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm space-y-4">
+      <div className="bg-surface rounded-xl border border-border p-5 shadow-sm space-y-4 transition-colors">
         <div>
-          <h3 className="font-heading font-bold text-base text-slate-900 dark:text-white">
-            Historical Rolling Returns Distribution
+          <h3 className="font-semibold text-base text-text">
+            Historical rolling returns distribution
           </h3>
-          <p className="text-xs text-slate-500 dark:text-slate-400">
-            Computed across all historical 5-year rolling windows from daily NAVs
+          <p className="text-xs text-text-muted">
+            Computed across 5-year rolling windows from daily NAVs.
           </p>
         </div>
 
         {fund.rollingReturns.hasInsufficientHistory ? (
-          <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-700 dark:text-amber-300">
+          <div className="p-3.5 rounded-lg bg-warning/10 border border-warning/20 text-xs text-warning">
             {fund.rollingReturns.insufficientReason || "Insufficient historical NAV data for rolling return scenarios."}
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 text-xs">
-            <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 space-y-1">
-              <span className="text-slate-400">Pessimistic (10th %ile):</span>
-              <div className="text-base font-bold text-rose-600 dark:text-rose-400 tabular-nums">
+          <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 text-xs">
+            <div className="p-4 rounded-xl bg-surface-muted border border-border space-y-1">
+              <span className="text-text-muted">Pessimistic (10th):</span>
+              <div className="text-base font-semibold text-danger tabular-nums">
                 {formatPercent(fund.rollingReturns.pessimistic10th)}
               </div>
-              <span className="text-[10px] text-slate-500">90% of times returns were higher</span>
+              <span className="text-[10px] text-text-muted">90% of times returns were higher</span>
             </div>
 
-            <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 space-y-1">
-              <span className="text-slate-400">Median Base (50th %ile):</span>
-              <div className="text-base font-bold text-emerald-600 dark:text-emerald-400 tabular-nums">
+            <div className="p-4 rounded-xl bg-surface-muted border border-border space-y-1">
+              <span className="text-text-muted">Median (50th):</span>
+              <div className="text-base font-semibold text-primary tabular-nums">
                 {formatPercent(fund.rollingReturns.base50th)}
               </div>
-              <span className="text-[10px] text-slate-500">Typical central outcome</span>
+              <span className="text-[10px] text-text-muted">Central typical outcome</span>
             </div>
 
-            <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 space-y-1">
-              <span className="text-slate-400">Optimistic (90th %ile):</span>
-              <div className="text-base font-bold text-teal-600 dark:text-teal-400 tabular-nums">
+            <div className="p-4 rounded-xl bg-surface-muted border border-border space-y-1">
+              <span className="text-text-muted">Optimistic (90th):</span>
+              <div className="text-base font-semibold text-primary tabular-nums">
                 {formatPercent(fund.rollingReturns.optimistic90th)}
               </div>
-              <span className="text-[10px] text-slate-500">Top 10% best historical runs</span>
+              <span className="text-[10px] text-text-muted">Top 10% best historical runs</span>
             </div>
 
-            <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 space-y-1">
-              <span className="text-slate-400">Probability of Loss:</span>
-              <div className="text-base font-bold text-slate-900 dark:text-white tabular-nums">
+            <div className="p-4 rounded-xl bg-surface-muted border border-border space-y-1">
+              <span className="text-text-muted">Probability of loss:</span>
+              <div className="text-base font-semibold text-text tabular-nums">
                 {fund.rollingReturns.probabilityOfLossPct ?? 0}%
               </div>
-              <span className="text-[10px] text-slate-500">Across rolling windows</span>
+              <span className="text-[10px] text-text-muted">Across 5-year periods</span>
             </div>
           </div>
         )}

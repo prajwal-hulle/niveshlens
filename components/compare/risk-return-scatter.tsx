@@ -14,48 +14,47 @@ import {
 } from "recharts";
 import { InstrumentMetrics } from "@/lib/finance/types";
 import { formatPercent } from "@/lib/utils";
+import { getShortInstrumentName, getInstrumentColor } from "@/lib/chart-colors";
 
 interface RiskReturnScatterProps {
   instruments: InstrumentMetrics[];
 }
 
 export function RiskReturnScatter({ instruments }: RiskReturnScatterProps) {
-  const data = instruments.map((inst) => ({
+  const data = instruments.map((inst, index) => ({
     name: inst.name,
+    shortName: getShortInstrumentName(inst.name, inst.type),
     volatility: inst.volatilityPct,
     realReturn: inst.realReturnPct,
+    postTaxReturn: inst.postTaxReturnPct,
+    nominalReturn: inst.nominalReturnPct,
     type: inst.type,
     score: inst.compositeScore,
+    color: getInstrumentColor(index),
   }));
 
-  const colors: Record<string, string> = {
-    FD: "#3B82F6",
-    PPF: "#10B981",
-    MF: "#8B5CF6",
-    LIC: "#F59E0B",
-  };
-
   return (
-    <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm min-h-[360px] flex flex-col justify-between">
+    <div className="bg-surface rounded-xl border border-border p-5 shadow-sm min-h-[340px] flex flex-col justify-between transition-colors">
       <div>
-        <h3 className="font-heading font-bold text-base text-slate-900 dark:text-white">
-          Risk vs Real Return Frontier
+        <h3 className="font-semibold text-base text-text">
+          Risk vs return
         </h3>
-        <p className="text-xs text-slate-500 dark:text-slate-400">
-          Scatter analysis: Annualized Volatility (Risk) vs Fisher Post-Tax Real Return. Upper-left quadrant is optimal.
+        <p className="text-xs text-text-muted">
+          Annualized volatility (risk) vs post-tax real return (Fisher equation). Upper-left is optimal.
         </p>
       </div>
 
       <div className="h-64 w-full pt-2">
         <ResponsiveContainer width="100%" height="100%">
           <ScatterChart margin={{ top: 15, right: 25, bottom: 25, left: 15 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#334155" opacity={0.2} />
+            <CartesianGrid strokeDasharray="3 3" stroke="currentColor" className="text-border" opacity={0.6} />
             <XAxis
               type="number"
               dataKey="volatility"
               name="Volatility"
               unit="%"
-              stroke="#94a3b8"
+              stroke="currentColor"
+              className="text-text-muted"
               fontSize={11}
               tickLine={false}
               label={{
@@ -63,7 +62,8 @@ export function RiskReturnScatter({ instruments }: RiskReturnScatterProps) {
                 position: "insideBottom",
                 offset: -12,
                 fontSize: 10,
-                fill: "#94a3b8",
+                fill: "currentColor",
+                className: "text-text-muted",
               }}
             />
             <YAxis
@@ -71,7 +71,8 @@ export function RiskReturnScatter({ instruments }: RiskReturnScatterProps) {
               dataKey="realReturn"
               name="Real Return"
               unit="%"
-              stroke="#94a3b8"
+              stroke="currentColor"
+              className="text-text-muted"
               fontSize={11}
               tickLine={false}
               label={{
@@ -80,43 +81,59 @@ export function RiskReturnScatter({ instruments }: RiskReturnScatterProps) {
                 position: "insideLeft",
                 offset: 0,
                 fontSize: 10,
-                fill: "#94a3b8",
+                fill: "currentColor",
+                className: "text-text-muted",
               }}
             />
-            <ZAxis type="number" dataKey="score" range={[100, 300]} name="Score" />
+            <ZAxis type="number" dataKey="score" range={[120, 240]} name="Score" />
             <Tooltip
               cursor={{ strokeDasharray: "3 3" }}
               content={({ payload }) => {
                 if (!payload || payload.length === 0) return null;
                 const d = payload[0].payload;
                 return (
-                  <div className="bg-slate-900 text-white p-3 rounded-xl border border-slate-700 text-xs space-y-1 shadow-lg">
-                    <div className="font-bold text-emerald-400">{d.name}</div>
-                    <div className="text-slate-300">
-                      Real Return: <span className="font-semibold text-white">{formatPercent(d.realReturn)}</span>
+                  <div className="bg-surface text-text p-3 rounded-lg border border-border text-xs space-y-1.5 shadow-md">
+                    <div className="font-semibold text-primary">{d.shortName}</div>
+                    <div className="text-[11px] text-text-muted">{d.name}</div>
+                    <div className="pt-1 space-y-0.5 border-t border-border">
+                      <div className="flex justify-between gap-3">
+                        <span className="text-text-muted">Real return:</span>
+                        <span className={`font-semibold ${d.realReturn < 0 ? "text-danger" : "text-primary"}`}>
+                          {formatPercent(d.realReturn, 2, true)}
+                        </span>
+                      </div>
+                      <div className="flex justify-between gap-3">
+                        <span className="text-text-muted">Post-tax return:</span>
+                        <span className="font-medium text-text">{formatPercent(d.postTaxReturn)}</span>
+                      </div>
+                      <div className="flex justify-between gap-3">
+                        <span className="text-text-muted">Volatility:</span>
+                        <span className="font-medium text-text">{formatPercent(d.volatility)}</span>
+                      </div>
+                      <div className="flex justify-between gap-3">
+                        <span className="text-text-muted">Score:</span>
+                        <span className="font-medium text-text">{d.score} / 100</span>
+                      </div>
                     </div>
-                    <div className="text-slate-300">
-                      Volatility: <span className="font-semibold text-white">{formatPercent(d.volatility)}</span>
-                    </div>
-                    <div className="text-slate-400 text-[10px]">Composite Score: {d.score}/100</div>
                   </div>
                 );
               }}
             />
             <Scatter name="Instruments" data={data}>
               {data.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={colors[entry.type] || "#10B981"} />
+                <Cell key={`cell-${index}`} fill={entry.color} />
               ))}
             </Scatter>
           </ScatterChart>
         </ResponsiveContainer>
       </div>
 
-      <div className="flex flex-wrap items-center justify-center gap-4 text-xs pt-2">
-        {Object.entries(colors).map(([type, color]) => (
-          <div key={type} className="flex items-center gap-1.5">
-            <span className="w-3 h-3 rounded-full" style={{ backgroundColor: color }} />
-            <span className="text-slate-600 dark:text-slate-400 font-medium">{type}</span>
+      {/* Single-row legend under chart */}
+      <div className="pt-2 flex flex-wrap items-center justify-center gap-4 text-xs">
+        {data.map((item, idx) => (
+          <div key={idx} className="flex items-center gap-1.5">
+            <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: item.color }} />
+            <span className="text-text-muted font-medium">{item.shortName}</span>
           </div>
         ))}
       </div>

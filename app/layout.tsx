@@ -53,12 +53,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className="min-h-screen flex flex-col font-sans bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100">
+      <body className="min-h-screen flex flex-col font-sans bg-background text-text antialiased">
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <QueryProvider>
             <CurrencyProvider>
               <Navbar />
-              <main className="flex-1 mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 py-8 space-y-8">{children}</main>
+              <main className="flex-1 mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 py-8">{children}</main>
               <Footer />
             </CurrencyProvider>
           </QueryProvider>

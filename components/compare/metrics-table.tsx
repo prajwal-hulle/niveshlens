@@ -16,13 +16,13 @@ export function MetricsTable({ instruments, profile }: MetricsTableProps) {
   const { format } = useCurrency();
 
   return (
-    <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
-      <div className="p-5 border-b border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+    <div className="bg-surface rounded-xl border border-border shadow-sm overflow-hidden transition-colors">
+      <div className="p-4 sm:p-5 border-b border-border flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h3 className="font-heading font-bold text-base text-slate-900 dark:text-white">
-            Comprehensive Analytical Comparison
+          <h3 className="font-semibold text-base text-text">
+            Analytical comparison
           </h3>
-          <p className="text-xs text-slate-500 dark:text-slate-400">
+          <p className="text-xs text-text-muted">
             Side-by-side returns, tax drag, real purchasing power, and charges across selected instruments ({profile.financialYear || "FY 2025-26"})
           </p>
         </div>
@@ -31,7 +31,7 @@ export function MetricsTable({ instruments, profile }: MetricsTableProps) {
             href="https://www.incometax.gov.in"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/30 hover:underline shrink-0"
+            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/30 hover:underline shrink-0"
           >
             ⚠️ Unverified projection – verify at incometax.gov.in
           </a>
@@ -42,15 +42,15 @@ export function MetricsTable({ instruments, profile }: MetricsTableProps) {
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs border-collapse">
             <thead>
-              <tr className="bg-slate-50 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800 h-20">
-                <th className="p-4 font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider text-[11px] sticky left-0 bg-slate-50 dark:bg-slate-950 z-20 w-56 min-w-[220px] border-r border-slate-200 dark:border-slate-800 align-top">
-                  Metric & Formula
+              <tr className="bg-surface-muted border-b border-border h-16">
+                <th className="p-4 font-medium text-text-muted text-xs sticky left-0 bg-surface-muted z-20 w-56 min-w-[220px] border-r border-border align-middle">
+                  Metric &amp; formula
                 </th>
                 {instruments.map((inst) => (
-                  <th key={inst.id} className="p-4 font-bold text-slate-900 dark:text-white min-w-[220px] align-top">
+                  <th key={inst.id} className="p-4 font-semibold text-text min-w-[220px] align-middle">
                     <div className="space-y-1">
-                      <div className="text-sm truncate">{inst.name}</div>
-                      <span className="inline-block px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-500/10 text-emerald-700 dark:text-emerald-400">
+                      <div className="text-sm font-medium truncate" title={inst.name}>{inst.name}</div>
+                      <span className="inline-block px-2 py-0.5 rounded text-[10px] font-medium bg-primary/10 text-primary">
                         {inst.category}
                       </span>
                     </div>
@@ -58,12 +58,12 @@ export function MetricsTable({ instruments, profile }: MetricsTableProps) {
                 ))}
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100 dark:divide-slate-800/80">
+            <tbody className="divide-y divide-border">
               {/* 1. Transparent Composite Score */}
-              <tr className="bg-emerald-500/5 font-semibold">
-                <td className="p-4 sticky left-0 bg-emerald-50 dark:bg-slate-900 z-10 w-56 min-w-[220px] border-r border-slate-200 dark:border-slate-800">
+              <tr className="bg-primary/5 font-medium">
+                <td className="p-4 sticky left-0 bg-surface z-10 w-56 min-w-[220px] border-r border-border text-text">
                   <FormulaTooltip
-                    label="NiveshLens Composite Score"
+                    label="NiveshLens score"
                     formula="Σ (Dimension_i × User_Weight_i) / Σ (Weights)"
                     explanation="Objective multi-criteria score (0-100) factoring in returns, safety, liquidity, tax efficiency, flexibility, and transparency."
                     source="Scoring Engine"
@@ -71,7 +71,7 @@ export function MetricsTable({ instruments, profile }: MetricsTableProps) {
                 </td>
                 {instruments.map((inst) => (
                   <td key={inst.id} className="p-4 min-w-[220px]">
-                    <span className="text-base font-extrabold text-emerald-600 dark:text-emerald-400">
+                    <span className="text-sm font-semibold text-primary">
                       {inst.compositeScore} / 100
                     </span>
                   </td>
@@ -80,7 +80,7 @@ export function MetricsTable({ instruments, profile }: MetricsTableProps) {
 
               {/* 2. Nominal Return */}
               <tr>
-                <td className="p-4 sticky left-0 bg-white dark:bg-slate-900 z-10 w-56 min-w-[220px] border-r border-slate-200 dark:border-slate-800 font-medium text-slate-600 dark:text-slate-300">
+                <td className="p-4 sticky left-0 bg-surface z-10 w-56 min-w-[220px] border-r border-border font-medium text-text-muted">
                   <FormulaTooltip
                     label="Contracted / Median CAGR"
                     formula="FD: Contracted rate; PPF: Notified rate; MF: Median rolling CAGR; LIC: IRR"
@@ -89,17 +89,17 @@ export function MetricsTable({ instruments, profile }: MetricsTableProps) {
                   />
                 </td>
                 {instruments.map((inst) => (
-                  <td key={inst.id} className="p-4 font-bold text-slate-900 dark:text-white tabular-nums min-w-[220px]">
+                  <td key={inst.id} className="p-4 font-medium text-text tabular-nums min-w-[220px]">
                     {formatPercent(inst.nominalReturnPct)}
                   </td>
                 ))}
               </tr>
 
               {/* 3. Post-Tax Return */}
-              <tr className="bg-slate-50/50 dark:bg-slate-950/20">
-                <td className="p-4 sticky left-0 bg-slate-50 dark:bg-slate-950 z-10 w-56 min-w-[220px] border-r border-slate-200 dark:border-slate-800 font-medium text-slate-600 dark:text-slate-300">
+              <tr className="bg-surface-muted/40">
+                <td className="p-4 sticky left-0 bg-surface-muted z-10 w-56 min-w-[220px] border-r border-border font-medium text-text-muted">
                   <FormulaTooltip
-                    label="Post-Tax Return (Net)"
+                    label="Post-tax return"
                     formula="FD: r × (1 - TaxRate); Equity MF: LTCG @ 12.5% above ₹1.25L; PPF: Tax-free (EEE)"
                     explanation="Net annual return after subtracting your income tax slab liabilities."
                     source="Income Tax Act, 1961"
@@ -110,15 +110,15 @@ export function MetricsTable({ instruments, profile }: MetricsTableProps) {
                         href="https://www.incometax.gov.in"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/30 hover:underline"
+                        className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-medium bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/30 hover:underline"
                       >
-                        ⚠️ Unverified projection – verify at incometax.gov.in
+                        ⚠️ FY 2026-27 unverified
                       </a>
                     </div>
                   )}
                 </td>
                 {instruments.map((inst) => (
-                  <td key={inst.id} className="p-4 font-bold text-slate-900 dark:text-white tabular-nums min-w-[220px]">
+                  <td key={inst.id} className="p-4 font-medium text-text tabular-nums min-w-[220px]">
                     {formatPercent(inst.postTaxReturnPct)}
                   </td>
                 ))}
@@ -126,21 +126,21 @@ export function MetricsTable({ instruments, profile }: MetricsTableProps) {
 
               {/* 4. Real Return (Fisher Formula) */}
               <tr>
-                <td className="p-4 sticky left-0 bg-white dark:bg-slate-900 z-10 w-56 min-w-[220px] border-r border-slate-200 dark:border-slate-800 font-medium text-slate-600 dark:text-slate-300">
+                <td className="p-4 sticky left-0 bg-surface z-10 w-56 min-w-[220px] border-r border-border font-medium text-text-muted">
                   <FormulaTooltip
-                    label="Real Return (Fisher Equation)"
+                    label="Real return (Fisher)"
                     formula="Real = ((1 + PostTaxRate) / (1 + CPI_Inflation)) - 1"
                     explanation="Purchasing power growth rate after accounting for CPI inflation drag. Negative means loss of purchasing power."
                     source="Irving Fisher Mathematical Formula"
                   />
                 </td>
                 {instruments.map((inst) => (
-                  <td key={inst.id} className="p-4 font-bold tabular-nums min-w-[220px]">
+                  <td key={inst.id} className="p-4 font-medium tabular-nums min-w-[220px]">
                     <span
                       className={
                         inst.realReturnPct < 0
-                          ? "text-rose-600 dark:text-rose-400 font-extrabold"
-                          : "text-emerald-600 dark:text-emerald-400"
+                          ? "text-danger font-semibold"
+                          : "text-primary font-semibold"
                       }
                     >
                       {formatPercent(inst.realReturnPct, 2, true)}
@@ -150,17 +150,17 @@ export function MetricsTable({ instruments, profile }: MetricsTableProps) {
               </tr>
 
               {/* 5. Effective IRR / XIRR */}
-              <tr className="bg-slate-50/50 dark:bg-slate-950/20">
-                <td className="p-4 sticky left-0 bg-slate-50 dark:bg-slate-950 z-10 w-56 min-w-[220px] border-r border-slate-200 dark:border-slate-800 font-medium text-slate-600 dark:text-slate-300">
+              <tr className="bg-surface-muted/40">
+                <td className="p-4 sticky left-0 bg-surface-muted z-10 w-56 min-w-[220px] border-r border-border font-medium text-text-muted">
                   <FormulaTooltip
-                    label="Effective Internal Rate of Return (IRR)"
+                    label="Effective IRR / XIRR"
                     formula="Σ [ C_t / (1 + IRR)^t ] = 0"
                     explanation="True compounding return across the life of the instrument taking into account irregular outflows and terminal inflows."
                     source="Internal Pure Math Engine (Newton-Raphson)"
                   />
                 </td>
                 {instruments.map((inst) => (
-                  <td key={inst.id} className="p-4 font-bold tabular-nums min-w-[220px]">
+                  <td key={inst.id} className="p-4 font-medium text-text tabular-nums min-w-[220px]">
                     {formatPercent(inst.effectiveIrrPct)}
                   </td>
                 ))}
@@ -168,9 +168,9 @@ export function MetricsTable({ instruments, profile }: MetricsTableProps) {
 
               {/* 6. Volatility (Annualized Standard Deviation) */}
               <tr>
-                <td className="p-4 sticky left-0 bg-white dark:bg-slate-900 z-10 w-56 min-w-[220px] border-r border-slate-200 dark:border-slate-800 font-medium text-slate-600 dark:text-slate-300">
+                <td className="p-4 sticky left-0 bg-surface z-10 w-56 min-w-[220px] border-r border-border font-medium text-text-muted">
                   <FormulaTooltip
-                    label="Annualized Volatility"
+                    label="Annualized volatility"
                     formula="σ_ann = std(daily_returns) × √250"
                     explanation="Standard deviation of daily returns across 250 Indian trading days. 0% indicates guaranteed return with no price fluctuation."
                     source="Daily NAV History"
@@ -179,34 +179,34 @@ export function MetricsTable({ instruments, profile }: MetricsTableProps) {
                 {instruments.map((inst) => (
                   <td key={inst.id} className="p-4 tabular-nums min-w-[220px]">
                     {inst.volatilityPct > 0 ? (
-                      <span className="font-semibold text-amber-600 dark:text-amber-400">
+                      <span className="font-medium text-warning">
                         {formatPercent(inst.volatilityPct)}
                       </span>
                     ) : (
-                      <span className="text-slate-400 font-medium">0.00% (Guaranteed)</span>
+                      <span className="text-text-muted">0.00% (Guaranteed)</span>
                     )}
                   </td>
                 ))}
               </tr>
 
               {/* 7. Max Historical Drawdown */}
-              <tr className="bg-slate-50/50 dark:bg-slate-950/20">
-                <td className="p-4 sticky left-0 bg-slate-50 dark:bg-slate-950 z-10 w-56 min-w-[220px] border-r border-slate-200 dark:border-slate-800 font-medium text-slate-600 dark:text-slate-300">
+              <tr className="bg-surface-muted/40">
+                <td className="p-4 sticky left-0 bg-surface-muted z-10 w-56 min-w-[220px] border-r border-border font-medium text-text-muted">
                   <FormulaTooltip
-                    label="Maximum Peak Drawdown"
+                    label="Maximum peak drawdown"
                     formula="Max Drawdown = (Trough NAV - Peak NAV) / Peak NAV"
                     explanation="The single largest peak-to-trough drop in historical NAV. Exposes worst-case market crash risk."
                     source="Daily NAV Trough Analysis"
                   />
                 </td>
                 {instruments.map((inst) => (
-                  <td key={inst.id} className="p-4 tabular-nums font-semibold min-w-[220px]">
+                  <td key={inst.id} className="p-4 tabular-nums font-medium min-w-[220px]">
                     {inst.maxDrawdownPct > 0 ? (
-                      <span className="text-rose-600 dark:text-rose-400">
+                      <span className="text-danger">
                         -{inst.maxDrawdownPct}%
                       </span>
                     ) : (
-                      <span className="text-emerald-600 dark:text-emerald-400">0.00%</span>
+                      <span className="text-primary">0.00%</span>
                     )}
                   </td>
                 ))}
@@ -214,36 +214,36 @@ export function MetricsTable({ instruments, profile }: MetricsTableProps) {
 
               {/* 8. Total Expense Ratio (AMFI) */}
               <tr>
-                <td className="p-4 sticky left-0 bg-white dark:bg-slate-900 z-10 w-56 min-w-[220px] border-r border-slate-200 dark:border-slate-800 font-medium text-slate-600 dark:text-slate-300">
+                <td className="p-4 sticky left-0 bg-surface z-10 w-56 min-w-[220px] border-r border-border font-medium text-text-muted">
                   <FormulaTooltip
-                    label="Expense Ratio / Admin Load"
+                    label="Expense ratio / Admin load"
                     formula="Annual TER disclosed by AMC to AMFI"
                     explanation="Annual percentage fee deducted directly from scheme AUM. (Per correction #4: never estimated; if missing shows 'TER unavailable')."
                     source="AMFI Monthly TER Disclosures"
                   />
                 </td>
                 {instruments.map((inst) => (
-                  <td key={inst.id} className="p-4 tabular-nums font-semibold min-w-[220px]">
+                  <td key={inst.id} className="p-4 tabular-nums font-medium text-text min-w-[220px]">
                     {inst.type === "MF" ? (
                       inst.expenseRatioPct !== null && inst.expenseRatioPct !== undefined ? (
                         `${inst.expenseRatioPct}% / yr`
                       ) : (
-                        <span className="text-slate-400 italic">TER unavailable</span>
+                        <span className="text-text-muted italic">TER unavailable</span>
                       )
                     ) : inst.type === "FD" || inst.type === "PPF" ? (
-                      <span className="text-emerald-600 dark:text-emerald-400">0.00% (Nil)</span>
+                      <span className="text-primary">0.00% (Nil)</span>
                     ) : (
-                      <span className="text-amber-600">Brochure Mortality + Admin Charges</span>
+                      <span className="text-warning">Brochure mortality + admin charges</span>
                     )}
                   </td>
                 ))}
               </tr>
 
               {/* 9. Liquidity & Lock-in */}
-              <tr className="bg-slate-50/50 dark:bg-slate-950/20">
-                <td className="p-4 sticky left-0 bg-slate-50 dark:bg-slate-950 z-10 w-56 min-w-[220px] border-r border-slate-200 dark:border-slate-800 font-medium text-slate-600 dark:text-slate-300">
+              <tr className="bg-surface-muted/40">
+                <td className="p-4 sticky left-0 bg-surface-muted z-10 w-56 min-w-[220px] border-r border-border font-medium text-text-muted">
                   <FormulaTooltip
-                    label="Mandatory Lock-in & Liquidity"
+                    label="Mandatory lock-in &amp; liquidity"
                     formula="Minimum holding duration before unrestricted redemption"
                     explanation="How easily and quickly you can convert this investment into cash."
                     source="Scheme Information Document"
@@ -252,12 +252,12 @@ export function MetricsTable({ instruments, profile }: MetricsTableProps) {
                 {instruments.map((inst) => (
                   <td key={inst.id} className="p-4 min-w-[220px]">
                     <div className="space-y-0.5">
-                      <span className="font-bold text-slate-900 dark:text-white">
+                      <span className="font-medium text-text">
                         {inst.lockInPeriodMonths > 0
-                          ? `${Math.round(inst.lockInPeriodMonths / 12)} Yrs Lock-in`
-                          : "Open Ended (T+2)"}
+                          ? `${Math.round(inst.lockInPeriodMonths / 12)} yrs lock-in`
+                          : "Open ended (T+2)"}
                       </span>
-                      <div className="text-[10px] text-slate-500">
+                      <div className="text-[10px] text-text-muted">
                         Liquidity score: {inst.liquidityScore}/100
                       </div>
                     </div>
@@ -267,8 +267,8 @@ export function MetricsTable({ instruments, profile }: MetricsTableProps) {
 
               {/* 10. Traceable Source & Freshness */}
               <tr>
-                <td className="p-4 sticky left-0 bg-white dark:bg-slate-900 z-10 w-56 min-w-[220px] border-r border-slate-200 dark:border-slate-800 font-medium text-slate-600 dark:text-slate-300">
-                  Verifiable Source & Age
+                <td className="p-4 sticky left-0 bg-surface z-10 w-56 min-w-[220px] border-r border-border font-medium text-text-muted">
+                  Verifiable source &amp; age
                 </td>
                 {instruments.map((inst) => (
                   <td key={inst.id} className="p-4 min-w-[220px]">
@@ -284,8 +284,6 @@ export function MetricsTable({ instruments, profile }: MetricsTableProps) {
             </tbody>
           </table>
         </div>
-        {/* Subtle right-edge fade to indicate scrollability without duplicate scrollbars */}
-        <div className="pointer-events-none absolute top-0 right-0 bottom-0 w-8 bg-gradient-to-l from-white dark:from-slate-900 to-transparent" />
       </div>
     </div>
   );

@@ -101,34 +101,30 @@ export default function GoalPage() {
   const totalGains = Math.max(0, finalCorpus - finalInvested);
 
   return (
-    <div className="w-full space-y-8">
+    <div className="w-full space-y-6">
       {/* Header */}
-      <div className="space-y-2">
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20">
-          <Target className="w-3.5 h-3.5 text-emerald-500" />
-          <span>Reverse SIP Goal Engine</span>
-        </div>
-        <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-          Plan Your Target Wealth Corpus
+      <div className="space-y-1">
+        <h1 className="text-2xl sm:text-3xl font-semibold text-text tracking-tight">
+          SIP goal corpus planner
         </h1>
-        <p className="text-sm text-slate-500 dark:text-slate-400 max-w-2xl leading-relaxed">
-          Calculate the exact monthly SIP required to achieve your financial goal, with optional annual step-up linked to salary increments.
+        <p className="text-xs sm:text-sm text-text-muted max-w-2xl leading-relaxed">
+          Calculate the exact monthly SIP needed to reach your target corpus, with optional annual step-up.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left Inputs Card */}
-        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm space-y-5">
-          <h3 className="font-heading font-bold text-sm text-slate-900 dark:text-white border-b border-slate-200 dark:border-slate-800 pb-2">
-            Goal Target & Horizon
+        <div className="bg-surface rounded-xl border border-border p-5 shadow-sm space-y-4 transition-colors">
+          <h3 className="font-semibold text-sm text-text border-b border-border pb-2">
+            Target &amp; horizon
           </h3>
 
           <div>
             <div className="flex justify-between items-baseline mb-1">
-              <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
-                Target Corpus (₹)
+              <label className="text-xs font-medium text-text">
+                Target corpus (₹)
               </label>
-              <span className="text-sm font-bold text-emerald-600 dark:text-emerald-400">
+              <span className="text-xs font-semibold text-primary">
                 {format(targetCorpus)}
               </span>
             </div>
@@ -139,9 +135,9 @@ export default function GoalPage() {
               step={500000}
               value={targetCorpus}
               onChange={(e) => setTargetCorpus(Number(e.target.value))}
-              className="w-full accent-emerald-500"
+              className="w-full accent-primary"
             />
-            <div className="flex justify-between text-[11px] text-slate-400">
+            <div className="flex justify-between text-[11px] text-text-muted">
               <span>₹5 Lakhs</span>
               <span>₹5 Crores</span>
             </div>
@@ -149,10 +145,10 @@ export default function GoalPage() {
 
           <div>
             <div className="flex justify-between items-baseline mb-1">
-              <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
-                Time Horizon
+              <label className="text-xs font-medium text-text">
+                Time horizon
               </label>
-              <span className="text-sm font-bold text-emerald-600 dark:text-emerald-400">
+              <span className="text-xs font-semibold text-primary">
                 {horizonYears} Years
               </span>
             </div>
@@ -162,23 +158,23 @@ export default function GoalPage() {
               max={30}
               value={horizonYears}
               onChange={(e) => setHorizonYears(Number(e.target.value))}
-              className="w-full accent-emerald-500"
+              className="w-full accent-primary"
             />
           </div>
 
           {/* Instrument Preset */}
           <div>
-            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-              Benchmark Return Vehicle
+            <label className="block text-xs font-medium text-text mb-1.5">
+              Benchmark return vehicle
             </label>
             <div className="grid grid-cols-3 gap-2">
               <button
                 type="button"
                 onClick={() => handlePresetChange("MF")}
-                className={`py-2 px-1 rounded-xl text-xs font-bold border transition-colors ${
+                className={`py-1.5 px-1 rounded-lg text-xs font-medium border transition-colors ${
                   instrumentPreset === "MF"
-                    ? "bg-emerald-500/10 border-emerald-500 text-emerald-700 dark:text-emerald-400"
-                    : "border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-400"
+                    ? "bg-primary/10 border-primary text-primary"
+                    : "border-border text-text-muted hover:text-text"
                 }`}
               >
                 Equity MF (~12%)
@@ -186,10 +182,10 @@ export default function GoalPage() {
               <button
                 type="button"
                 onClick={() => handlePresetChange("PPF")}
-                className={`py-2 px-1 rounded-xl text-xs font-bold border transition-colors ${
+                className={`py-1.5 px-1 rounded-lg text-xs font-medium border transition-colors ${
                   instrumentPreset === "PPF"
-                    ? "bg-emerald-500/10 border-emerald-500 text-emerald-700 dark:text-emerald-400"
-                    : "border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-400"
+                    ? "bg-primary/10 border-primary text-primary"
+                    : "border-border text-text-muted hover:text-text"
                 }`}
               >
                 PPF ({ppfRate}%)
@@ -197,10 +193,10 @@ export default function GoalPage() {
               <button
                 type="button"
                 onClick={() => handlePresetChange("FD")}
-                className={`py-2 px-1 rounded-xl text-xs font-bold border transition-colors ${
+                className={`py-1.5 px-1 rounded-lg text-xs font-medium border transition-colors ${
                   instrumentPreset === "FD"
-                    ? "bg-emerald-500/10 border-emerald-500 text-emerald-700 dark:text-emerald-400"
-                    : "border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-400"
+                    ? "bg-primary/10 border-primary text-primary"
+                    : "border-border text-text-muted hover:text-text"
                 }`}
               >
                 Bank FD ({topFdRate}%)
@@ -209,24 +205,24 @@ export default function GoalPage() {
           </div>
 
           {/* Step-up Option */}
-          <div className="pt-2 border-t border-slate-200 dark:border-slate-800 space-y-3">
+          <div className="pt-2 border-t border-border space-y-3">
             <div className="flex items-center justify-between">
-              <label className="text-xs font-semibold text-slate-800 dark:text-slate-200 cursor-pointer">
-                Annual Step-up SIP
+              <label className="text-xs font-medium text-text cursor-pointer">
+                Annual step-up SIP
               </label>
               <input
                 type="checkbox"
                 checked={enableStepUp}
                 onChange={(e) => setEnableStepUp(e.target.checked)}
-                className="w-4 h-4 accent-emerald-500 rounded"
+                className="w-4 h-4 accent-primary rounded"
               />
             </div>
 
             {enableStepUp && (
               <div className="space-y-1">
-                <div className="flex justify-between text-xs font-semibold">
-                  <span>Annual Step-up Rate</span>
-                  <span className="text-emerald-600 font-bold">{stepUpPct}% / yr</span>
+                <div className="flex justify-between text-xs font-medium">
+                  <span className="text-text-muted">Step-up rate</span>
+                  <span className="text-primary font-semibold">{stepUpPct}% / yr</span>
                 </div>
                 <input
                   type="range"
@@ -235,10 +231,10 @@ export default function GoalPage() {
                   step={1}
                   value={stepUpPct}
                   onChange={(e) => setStepUpPct(Number(e.target.value))}
-                  className="w-full accent-emerald-500"
+                  className="w-full accent-primary"
                 />
-                <p className="text-[11px] text-slate-400">
-                  Increases SIP amount every 12 months as your income rises.
+                <p className="text-[11px] text-text-muted">
+                  Increases SIP amount annually as income rises.
                 </p>
               </div>
             )}
@@ -248,75 +244,83 @@ export default function GoalPage() {
         {/* Right Output & Charts */}
         <div className="lg:col-span-2 space-y-6">
           {/* Output Highlight Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-1">
-              <span className="text-xs text-slate-400">
-                {enableStepUp ? "Initial Monthly SIP (Yr 1):" : "Monthly Fixed SIP:"}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div className="p-4 rounded-xl bg-surface border border-border space-y-1 transition-colors">
+              <span className="text-xs text-text-muted">
+                {enableStepUp ? "Initial SIP (Yr 1):" : "Monthly fixed SIP:"}
               </span>
-              <div className="text-xl font-extrabold text-emerald-600 dark:text-emerald-400 tabular-nums">
+              <div className="text-lg font-semibold text-primary tabular-nums">
                 {format(enableStepUp ? requiredStepUpSip : requiredFlatSip)} / mo
               </div>
-              <span className="text-[11px] text-slate-500">
-                {enableStepUp ? `Steps up by ${stepUpPct}% annually` : "Constant through tenure"}
+              <span className="text-[11px] text-text-muted">
+                {enableStepUp ? `Steps up by ${stepUpPct}% yearly` : "Constant through tenure"}
               </span>
             </div>
 
-            <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-1">
-              <span className="text-xs text-slate-400">Total Invested Principal:</span>
-              <div className="text-xl font-extrabold text-slate-900 dark:text-white tabular-nums">
+            <div className="p-4 rounded-xl bg-surface border border-border space-y-1 transition-colors">
+              <span className="text-xs text-text-muted">Total invested:</span>
+              <div className="text-lg font-semibold text-text tabular-nums">
                 {format(finalInvested)}
               </div>
-              <span className="text-[11px] text-slate-500">
-                From your personal savings
+              <span className="text-[11px] text-text-muted">
+                Personal principal contribution
               </span>
             </div>
 
-            <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 space-y-1">
-              <span className="text-xs text-emerald-800 dark:text-emerald-300 font-semibold">
-                Wealth Created (Gains):
+            <div className="p-4 rounded-xl bg-primary/10 border border-primary/20 space-y-1 transition-colors">
+              <span className="text-xs text-primary font-medium">
+                Wealth created:
               </span>
-              <div className="text-xl font-extrabold text-emerald-600 dark:text-emerald-400 tabular-nums">
+              <div className="text-lg font-semibold text-primary tabular-nums">
                 +{format(totalGains)}
               </div>
-              <span className="text-[11px] text-emerald-700 dark:text-emerald-300 font-medium">
-                {Math.round((totalGains / finalCorpus) * 100)}% of final corpus is pure compounding!
+              <span className="text-[11px] text-primary/80">
+                {Math.round((totalGains / finalCorpus) * 100)}% of final corpus is compounding
               </span>
             </div>
           </div>
 
           {/* Area Chart: Principal vs Compounded Wealth */}
-          <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-4">
-            <h3 className="font-heading font-bold text-sm text-slate-900 dark:text-white">
-              Wealth Accumulation Trajectory
+          <div className="p-5 rounded-xl bg-surface border border-border space-y-4 transition-colors">
+            <h3 className="font-semibold text-sm text-text">
+              Wealth accumulation trajectory
             </h3>
 
             <div className="h-64 w-full">
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={chartData} margin={{ top: 10, right: 20, bottom: 5, left: 10 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#334155" opacity={0.2} />
-                  <XAxis dataKey="year" stroke="#94a3b8" fontSize={11} />
+                <AreaChart data={chartData} margin={{ top: 10, right: 15, bottom: 5, left: 10 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="currentColor" className="text-border" opacity={0.6} />
+                  <XAxis dataKey="year" stroke="currentColor" className="text-text-muted" fontSize={11} tickLine={false} />
                   <YAxis
-                    stroke="#94a3b8"
+                    stroke="currentColor"
+                    className="text-text-muted"
                     fontSize={11}
+                    tickLine={false}
                     tickFormatter={(v) => format(v, 0)}
                   />
                   <Tooltip
-                    contentStyle={{
-                      backgroundColor: "#0f172a",
-                      borderColor: "#334155",
-                      borderRadius: "0.75rem",
-                      fontSize: "12px",
-                      color: "#f8fafc",
+                    content={({ payload, label }) => {
+                      if (!payload || payload.length === 0) return null;
+                      return (
+                        <div className="bg-surface text-text p-2.5 rounded-lg border border-border text-xs space-y-1 shadow-md">
+                          <div className="text-text-muted">{label}</div>
+                          {payload.map((p: any, idx: number) => (
+                            <div key={idx} className="flex justify-between gap-3">
+                              <span className="text-text-muted">{p.name}:</span>
+                              <span className="font-semibold tabular-nums text-text">{format(p.value)}</span>
+                            </div>
+                          ))}
+                        </div>
+                      );
                     }}
-                    formatter={(val: any) => [format(val), ""]}
                   />
-                  <Legend wrapperStyle={{ fontSize: "11px" }} />
+                  <Legend wrapperStyle={{ fontSize: "11px", paddingTop: "8px" }} />
                   <Area
                     type="monotone"
                     dataKey="Compounded Wealth"
-                    stroke="#10B981"
-                    fill="#10B981"
-                    fillOpacity={0.2}
+                    stroke="#059669"
+                    fill="#059669"
+                    fillOpacity={0.15}
                     strokeWidth={2}
                   />
                   <Area
@@ -324,7 +328,7 @@ export default function GoalPage() {
                     dataKey="Invested Capital"
                     stroke="#64748b"
                     fill="#64748b"
-                    fillOpacity={0.1}
+                    fillOpacity={0.08}
                     strokeWidth={1.5}
                   />
                 </AreaChart>

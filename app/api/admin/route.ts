@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { isAuthorizedAdmin, isAdminConfigured } from "@/lib/auth";
 import {
   getMacroRates,
@@ -122,6 +123,11 @@ export async function POST(req: Request) {
   } catch (err: any) {
     return NextResponse.json({ error: err.message || "Failed to update record" }, { status: 400 });
   }
+
+  revalidatePath("/");
+  revalidatePath("/fd");
+  revalidatePath("/ppf");
+  revalidatePath("/compare");
 
   return NextResponse.json({ success: true, message: `Successfully updated ${type}:${id}` });
 }

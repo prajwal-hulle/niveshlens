@@ -32,44 +32,40 @@ export default function FdExplorerPage() {
   });
 
   return (
-    <div className="w-full space-y-8">
+    <div className="w-full space-y-6">
       {/* Header */}
-      <div className="space-y-2">
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20">
-          <Building className="w-3.5 h-3.5 text-emerald-500" />
-          <span>Fixed Deposit Intelligence Hub</span>
-        </div>
-        <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-          Bank & Post Office Fixed Deposit Rates
+      <div className="space-y-1">
+        <h1 className="text-2xl sm:text-3xl font-semibold text-text tracking-tight">
+          Fixed deposit rates
         </h1>
-        <p className="text-sm text-slate-500 dark:text-slate-400 max-w-2xl leading-relaxed">
-          Compare contracted interest rates across Public, Private, Small Finance Banks, and India Post Time Deposits with quarterly compounding.
+        <p className="text-xs sm:text-sm text-text-muted max-w-2xl leading-relaxed">
+          Contracted interest rates across Public, Private, Small Finance Banks, and Post Office Time Deposits with quarterly compounding.
         </p>
       </div>
 
       {/* DICGC ₹5 Lakh Limit Notice */}
-      <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-start gap-3 text-xs text-amber-900 dark:text-amber-200">
-        <ShieldCheck className="w-5 h-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
-        <div className="space-y-1">
-          <span className="font-bold">DICGC Deposit Insurance Notice:</span>
+      <div className="p-3.5 rounded-xl bg-surface border border-border border-l-4 border-l-amber-500 flex items-start gap-3 text-xs text-text-muted shadow-sm">
+        <ShieldCheck className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
+        <div className="space-y-0.5">
+          <span className="font-semibold text-text">DICGC deposit insurance:</span>
           <p className="leading-relaxed">
-            Bank deposits (principal + accrued interest) are insured by DICGC (RBI subsidiary) up to a statutory ceiling of <strong>₹ 5,00,000 per depositor per bank</strong> across all branches. Post Office Time Deposits carry sovereign Central Government backing with no upper limit.
+            Bank deposits are insured by DICGC up to <strong>₹5,00,000 per depositor per bank</strong>. Post Office Time Deposits carry sovereign Central Government backing without ceiling.
           </p>
         </div>
       </div>
 
       {/* Filter Bar & Controls */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm text-xs">
-        <div className="flex flex-wrap items-center gap-2">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-3.5 rounded-xl bg-surface border border-border shadow-sm text-xs transition-colors">
+        <div className="flex flex-wrap items-center gap-1.5">
           {["ALL", "PUBLIC", "PRIVATE", "SMALL_FINANCE", "POST_OFFICE"].map((cat) => (
             <button
               key={cat}
               type="button"
               onClick={() => setSelectedCategory(cat)}
-              className={`px-3 py-1.5 rounded-xl font-bold transition-colors ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
                 selectedCategory === cat
-                  ? "bg-emerald-600 text-white"
-                  : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                  ? "bg-primary text-white"
+                  : "bg-surface-muted text-text-muted hover:text-text"
               }`}
             >
               {cat.replace("_", " ")}
@@ -77,12 +73,12 @@ export default function FdExplorerPage() {
           ))}
         </div>
 
-        <label className="flex items-center gap-2 cursor-pointer font-semibold text-slate-700 dark:text-slate-300">
+        <label className="flex items-center gap-2 cursor-pointer font-medium text-text">
           <input
             type="checkbox"
             checked={isSenior}
             onChange={(e) => setIsSenior(e.target.checked)}
-            className="w-4 h-4 accent-emerald-500 rounded"
+            className="w-4 h-4 accent-primary rounded"
           />
           <span>Senior Citizen Rates (+0.50%)</span>
         </label>
@@ -102,37 +98,37 @@ export default function FdExplorerPage() {
           return (
             <div
               key={fd.id}
-              className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4 hover:border-emerald-500/40 transition-colors flex flex-col justify-between"
+              className="p-5 rounded-xl bg-surface border border-border shadow-sm space-y-4 hover:border-primary/50 transition-colors flex flex-col justify-between"
             >
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+                  <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-surface-muted text-text-muted">
                     {fd.category}
                   </span>
-                  <span className="text-[11px] text-slate-400 font-mono">
+                  <span className="text-[11px] text-text-muted font-mono">
                     Penalty: {fd.prematurePenaltyPct}%
                   </span>
                 </div>
 
-                <h3 className="font-bold text-sm text-slate-900 dark:text-white">{fd.bankName}</h3>
-                <div className="text-xs text-slate-500">{fd.tenureBucket}</div>
+                <h3 className="font-semibold text-sm text-text">{fd.bankName}</h3>
+                <div className="text-xs text-text-muted">{fd.tenureBucket}</div>
 
-                <div className="pt-2 flex items-baseline justify-between border-t border-slate-100 dark:border-slate-800">
-                  <span className="text-xs text-slate-400">Contracted Rate:</span>
-                  <span className="text-2xl font-extrabold text-emerald-600 dark:text-emerald-400 tabular-nums">
+                <div className="pt-2 flex items-baseline justify-between border-t border-border">
+                  <span className="text-xs text-text-muted">Contracted rate:</span>
+                  <span className="text-xl font-semibold text-primary tabular-nums">
                     {effectiveRate}%
                   </span>
                 </div>
 
-                <div className="text-[11px] text-slate-500 space-y-0.5 pt-1">
+                <div className="text-[11px] text-text-muted space-y-0.5 pt-1">
                   <div>Compounding: Quarterly</div>
-                  <div className="text-slate-700 dark:text-slate-300 font-medium">
+                  <div className="text-text font-medium">
                     {format(calculatorPrincipal)} in {calculatorTenureYears} yrs → {format(maturityVal)}
                   </div>
                 </div>
               </div>
 
-              <div className="pt-3 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between text-xs">
+              <div className="pt-3 border-t border-border flex items-center justify-between text-xs">
                 <FreshnessBadge
                   sourceName={fd.sourceName}
                   sourceUrl={fd.sourceUrl}
@@ -142,7 +138,7 @@ export default function FdExplorerPage() {
 
                 <Link
                   href={`/compare?fd=${fd.id}`}
-                  className="inline-flex items-center gap-1 text-emerald-600 hover:text-emerald-500 font-bold"
+                  className="inline-flex items-center gap-1 text-primary hover:underline font-medium"
                 >
                   <span>Compare</span>
                   <ArrowRight className="w-3.5 h-3.5" />

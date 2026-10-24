@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { Plus, X, Search, Shield, Building, Landmark, TrendingUp } from "lucide-react";
 import { AssetType } from "@/lib/finance/types";
+import { getInstrumentColor } from "@/lib/chart-colors";
 
 export interface SelectedInstrumentConfig {
   id: string;
@@ -39,7 +40,7 @@ export function InstrumentSelector({
   const [mfSearchResults, setMfSearchResults] = useState<any[]>([]);
   const [isSearchingMf, setIsSearchingMf] = useState(false);
 
-  // LIC sub-selector states (User enters premium, SA, term, PPT per correction #5)
+  // LIC sub-selector states
   const [selectedPlanId, setSelectedPlanId] = useState(availableInsurancePlans[0]?.planId || "lic-jeevan-labh-936");
   const [licAnnualPremium, setLicAnnualPremium] = useState(85600);
   const [licSumAssured, setLicSumAssured] = useState(1000000);
@@ -80,7 +81,7 @@ export function InstrumentSelector({
   return (
     <div className="space-y-3">
       <div className="flex flex-wrap items-center gap-2.5">
-        {selected.map((item) => {
+        {selected.map((item, index) => {
           let label: string = item.type;
           let icon = Landmark;
           if (item.type === "FD") {
@@ -100,19 +101,21 @@ export function InstrumentSelector({
           }
 
           const Icon = icon;
+          const dotColor = getInstrumentColor(index);
 
           return (
             <div
               key={item.id}
-              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm text-xs font-semibold text-slate-800 dark:text-slate-200"
+              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-border bg-surface shadow-sm text-xs font-medium text-text transition-colors"
             >
-              <Icon className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
+              <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: dotColor }} />
+              <Icon className="w-3.5 h-3.5 text-text-muted shrink-0" />
               <span className="truncate max-w-[200px] sm:max-w-[240px]">{label}</span>
               {selected.length > 1 && (
                 <button
                   type="button"
                   onClick={() => handleRemove(item.id)}
-                  className="p-0.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                  className="p-0.5 rounded hover:bg-surface-muted text-text-muted hover:text-text transition-colors"
                   aria-label="Remove instrument"
                 >
                   <X className="w-3.5 h-3.5" />
@@ -126,41 +129,41 @@ export function InstrumentSelector({
           <button
             type="button"
             onClick={() => setModalOpen(true)}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-dashed border-emerald-500/50 hover:border-emerald-500 bg-emerald-50/50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-300 text-xs font-bold transition-colors"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-dashed border-primary/50 hover:border-primary bg-primary/5 text-primary text-xs font-medium transition-colors"
           >
             <Plus className="w-3.5 h-3.5" />
-            <span>Add Instrument ({selected.length}/4)</span>
+            <span>Add instrument ({selected.length}/4)</span>
           </button>
         )}
       </div>
 
       {/* Add Instrument Modal */}
       {modalOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="w-full max-w-lg bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
-            <div className="p-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
-              <h3 className="font-heading font-bold text-slate-900 dark:text-white text-base">
-                Select Comparison Instrument
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="w-full max-w-lg bg-surface rounded-xl shadow-xl border border-border overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+            <div className="p-4 border-b border-border flex items-center justify-between">
+              <h3 className="font-semibold text-text text-base">
+                Select comparison instrument
               </h3>
               <button
                 onClick={() => setModalOpen(false)}
-                className="p-1 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                className="p-1 rounded-lg text-text-muted hover:text-text"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             {/* Type Switcher */}
-            <div className="grid grid-cols-4 gap-1 p-3 bg-slate-50 dark:bg-slate-950/50 border-b border-slate-200 dark:border-slate-800">
+            <div className="grid grid-cols-4 gap-1 p-2 bg-surface-muted border-b border-border">
               {(["FD", "PPF", "MF", "LIC"] as AssetType[]).map((type) => (
                 <button
                   key={type}
                   type="button"
                   onClick={() => setSelectedType(type)}
-                  className={`py-2 rounded-xl text-xs font-bold transition-all ${
+                  className={`py-1.5 rounded-lg text-xs font-medium transition-all ${
                     selectedType === type
-                      ? "bg-white dark:bg-slate-800 text-emerald-600 dark:text-emerald-400 shadow-sm"
-                      : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                      ? "bg-surface text-primary shadow-sm"
+                      : "text-text-muted hover:text-text"
                   }`}
                 >
                   {type}
@@ -173,13 +176,13 @@ export function InstrumentSelector({
               {selectedType === "FD" && (
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                      Choose Bank & Tenure Bucket
+                    <label className="block text-xs font-medium text-text mb-1">
+                      Choose bank &amp; tenure
                     </label>
                     <select
                       value={selectedBankId}
                       onChange={(e) => setSelectedBankId(e.target.value)}
-                      className="w-full px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                      className="w-full px-3 py-2 rounded-lg border border-border bg-surface text-text text-xs focus:ring-1 focus:ring-primary focus:outline-none"
                     >
                       {availableBanks.map((b) => (
                         <option key={b.id} value={b.id}>
@@ -197,9 +200,9 @@ export function InstrumentSelector({
                         bankId: selectedBankId,
                       })
                     }
-                    className="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-colors"
+                    className="w-full py-2.5 rounded-lg bg-primary hover:bg-primary-hover text-white text-xs font-medium transition-colors"
                   >
-                    Add Fixed Deposit to Comparison
+                    Add Fixed Deposit
                   </button>
                 </div>
               )}
@@ -207,12 +210,12 @@ export function InstrumentSelector({
               {/* PPF Selector */}
               {selectedType === "PPF" && (
                 <div className="space-y-4 text-center py-4">
-                  <Shield className="w-12 h-12 text-emerald-500 mx-auto" />
+                  <Shield className="w-10 h-10 text-primary mx-auto" />
                   <div className="space-y-1">
-                    <h4 className="font-bold text-sm text-slate-900 dark:text-white">
+                    <h4 className="font-semibold text-sm text-text">
                       Public Provident Fund (PPF)
                     </h4>
-                    <p className="text-xs text-slate-500 dark:text-slate-400">
+                    <p className="text-xs text-text-muted">
                       Sovereign central government backed. 15-year statutory lock-in, quarterly notified interest, EEE tax status.
                     </p>
                   </div>
@@ -224,9 +227,9 @@ export function InstrumentSelector({
                         type: "PPF",
                       })
                     }
-                    className="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-colors"
+                    className="w-full py-2.5 rounded-lg bg-primary hover:bg-primary-hover text-white text-xs font-medium transition-colors"
                   >
-                    Add PPF to Comparison
+                    Add PPF
                   </button>
                 </div>
               )}
@@ -235,24 +238,24 @@ export function InstrumentSelector({
               {selectedType === "MF" && (
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                      Search Mutual Fund Scheme (via live api.mfapi.in)
+                    <label className="block text-xs font-medium text-text mb-1">
+                      Search Mutual Fund Scheme
                     </label>
                     <div className="relative">
-                      <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+                      <Search className="w-4 h-4 text-text-muted absolute left-3 top-2.5" />
                       <input
                         type="text"
                         value={mfSearchQuery}
                         onChange={(e) => handleSearchMf(e.target.value)}
                         placeholder="Type scheme name (e.g. Parag Parikh, HDFC)..."
-                        className="w-full pl-9 pr-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                        className="w-full pl-9 pr-3 py-2 rounded-lg border border-border bg-surface text-text text-xs focus:ring-1 focus:ring-primary focus:outline-none"
                       />
                     </div>
                   </div>
 
                   <div className="space-y-1 max-h-48 overflow-y-auto">
                     {isSearchingMf && (
-                      <div className="p-3 text-center text-xs text-slate-400">Searching schemes...</div>
+                      <div className="p-3 text-center text-xs text-text-muted">Searching schemes...</div>
                     )}
                     {mfSearchResults.map((m) => (
                       <button
@@ -266,17 +269,17 @@ export function InstrumentSelector({
                             schemeName: m.schemeName,
                           })
                         }
-                        className="w-full text-left p-2.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-xs transition-colors flex items-center justify-between"
+                        className="w-full text-left p-2.5 rounded-lg hover:bg-surface-muted text-xs transition-colors flex items-center justify-between"
                       >
                         <div className="truncate pr-2">
-                          <div className="font-medium text-slate-800 dark:text-slate-200 truncate">{m.schemeName}</div>
-                          <span className="text-[10px] text-slate-400">{m.planType}</span>
+                          <div className="font-medium text-text truncate">{m.schemeName}</div>
+                          <span className="text-[10px] text-text-muted">{m.planType}</span>
                         </div>
-                        <Plus className="w-4 h-4 text-emerald-500 shrink-0" />
+                        <Plus className="w-4 h-4 text-primary shrink-0" />
                       </button>
                     ))}
                     {!isSearchingMf && mfSearchResults.length === 0 && (
-                      <div className="p-2 text-center text-[11px] text-slate-400">
+                      <div className="p-2 text-center text-[11px] text-text-muted">
                         Search and click any scheme to add.
                       </div>
                     )}
@@ -284,17 +287,17 @@ export function InstrumentSelector({
                 </div>
               )}
 
-              {/* LIC Plan Selector (Per correction #5: user enters premium, SA, term, PPT) */}
+              {/* LIC Plan Selector */}
               {selectedType === "LIC" && (
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                    <label className="block text-xs font-medium text-text mb-1">
                       Select LIC Plan
                     </label>
                     <select
                       value={selectedPlanId}
                       onChange={(e) => setSelectedPlanId(e.target.value)}
-                      className="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                      className="w-full px-3 py-2 rounded-lg border border-border bg-surface text-text text-xs focus:ring-1 focus:ring-primary focus:outline-none"
                     >
                       {availableInsurancePlans.map((p) => (
                         <option key={p.planId} value={p.planId}>
@@ -306,7 +309,7 @@ export function InstrumentSelector({
 
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-[11px] font-semibold text-slate-600 dark:text-slate-400 mb-1">
+                      <label className="block text-[11px] font-medium text-text-muted mb-1">
                         Annual Premium (₹)
                       </label>
                       <input
@@ -314,11 +317,11 @@ export function InstrumentSelector({
                         step={5000}
                         value={licAnnualPremium}
                         onChange={(e) => setLicAnnualPremium(Number(e.target.value))}
-                        className="w-full px-2.5 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-transparent text-xs"
+                        className="w-full px-2.5 py-1.5 rounded-lg border border-border bg-surface text-text text-xs"
                       />
                     </div>
                     <div>
-                      <label className="block text-[11px] font-semibold text-slate-600 dark:text-slate-400 mb-1">
+                      <label className="block text-[11px] font-medium text-text-muted mb-1">
                         Sum Assured (₹)
                       </label>
                       <input
@@ -326,11 +329,11 @@ export function InstrumentSelector({
                         step={50000}
                         value={licSumAssured}
                         onChange={(e) => setLicSumAssured(Number(e.target.value))}
-                        className="w-full px-2.5 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-transparent text-xs"
+                        className="w-full px-2.5 py-1.5 rounded-lg border border-border bg-surface text-text text-xs"
                       />
                     </div>
                     <div>
-                      <label className="block text-[11px] font-semibold text-slate-600 dark:text-slate-400 mb-1">
+                      <label className="block text-[11px] font-medium text-text-muted mb-1">
                         Policy Term (Yrs)
                       </label>
                       <input
@@ -339,11 +342,11 @@ export function InstrumentSelector({
                         max={35}
                         value={licTerm}
                         onChange={(e) => setLicTerm(Number(e.target.value))}
-                        className="w-full px-2.5 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-transparent text-xs"
+                        className="w-full px-2.5 py-1.5 rounded-lg border border-border bg-surface text-text text-xs"
                       />
                     </div>
                     <div>
-                      <label className="block text-[11px] font-semibold text-slate-600 dark:text-slate-400 mb-1">
+                      <label className="block text-[11px] font-medium text-text-muted mb-1">
                         Premium Paying Term
                       </label>
                       <input
@@ -352,13 +355,13 @@ export function InstrumentSelector({
                         max={licTerm}
                         value={licPpt}
                         onChange={(e) => setLicPpt(Number(e.target.value))}
-                        className="w-full px-2.5 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-transparent text-xs"
+                        className="w-full px-2.5 py-1.5 rounded-lg border border-border bg-surface text-text text-xs"
                       />
                     </div>
                   </div>
 
-                  <p className="text-[10px] text-slate-500 italic">
-                    Per brochure rules: Bonus history & surrender factors fetched from DB. Effective IRR computed strictly from your entered cash flows.
+                  <p className="text-[10px] text-text-muted italic">
+                    Per brochure rules: Bonus history &amp; surrender factors fetched from DB. Effective IRR computed strictly from your entered cash flows.
                   </p>
 
                   <button
@@ -374,9 +377,9 @@ export function InstrumentSelector({
                         premiumPayingTerm: licPpt,
                       })
                     }
-                    className="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-colors"
+                    className="w-full py-2.5 rounded-lg bg-primary hover:bg-primary-hover text-white text-xs font-medium transition-colors"
                   >
-                    Add LIC Policy to Comparison
+                    Add LIC Policy
                   </button>
                 </div>
               )}

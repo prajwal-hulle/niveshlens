@@ -8,13 +8,12 @@ import {
   XAxis,
   YAxis,
   Tooltip,
-  Legend,
   CartesianGrid,
 } from "recharts";
 import { InstrumentMetrics, UserProfile } from "@/lib/finance/types";
 import { useCurrency } from "../currency-context";
 import { fvCompoundLumpsum, fvSip } from "@/lib/finance/compound";
-import { AlertCircle } from "lucide-react";
+import { getShortInstrumentName, getInstrumentColor } from "@/lib/chart-colors";
 
 interface ProjectionChartProps {
   instruments: InstrumentMetrics[];
@@ -25,14 +24,11 @@ export function ProjectionChart({ instruments, profile }: ProjectionChartProps) 
   const { format } = useCurrency();
   const [scenarioMode, setScenarioMode] = useState<"base" | "pessimistic" | "optimistic">("base");
 
-  const colors = ["#10B981", "#3B82F6", "#F59E0B", "#EC4899", "#8B5CF6"];
-
   // Generate year-by-year trajectory data up to horizonYears
   const chartData = [];
   for (let yr = 1; yr <= profile.horizonYears; yr++) {
     const row: any = { year: `Yr ${yr}` };
 
-    // Cumulative Invested Capital line
     const invested =
       profile.investmentMode === "SIP" ? profile.investmentAmount * 12 * yr : profile.investmentAmount;
     row["Invested Capital"] = invested;
@@ -42,7 +38,6 @@ export function ProjectionChart({ instruments, profile }: ProjectionChartProps) 
 
       if (inst.type === "MF" && !inst.hasInsufficientHistory) {
         if (scenarioMode === "pessimistic" && inst.projectedCorpus.pessimistic !== null) {
-          // Approximate year rate from pessimistic scenario
           annualRate = (inst as any).rollingReturns?.pessimistic10th ?? inst.postTaxReturnPct * 0.7;
         } else if (scenarioMode === "optimistic" && inst.projectedCorpus.optimistic !== null) {
           annualRate = (inst as any).rollingReturns?.optimistic90th ?? inst.postTaxReturnPct * 1.3;
@@ -56,7 +51,8 @@ export function ProjectionChart({ instruments, profile }: ProjectionChartProps) 
         val = fvCompoundLumpsum(profile.investmentAmount, annualRate, yr);
       }
 
-      row[inst.name] = Math.round(val);
+      const shortName = getShortInstrumentName(inst.name, inst.type);
+      row[shortName] = Math.round(val);
     });
 
     chartData.push(row);
@@ -65,119 +61,138 @@ export function ProjectionChart({ instruments, profile }: ProjectionChartProps) 
   const anyInsufficient = instruments.some((i) => i.hasInsufficientHistory);
 
   return (
-    <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm space-y-4">
+    <div className="bg-surface rounded-xl border border-border p-5 shadow-sm space-y-4 transition-colors">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h3 className="font-heading font-bold text-base text-slate-900 dark:text-white">
-            Projected Corpus Trajectory
+          <h3 className="font-semibold text-base text-text">
+            Projected corpus growth
           </h3>
-          <p className="text-xs text-slate-500 dark:text-slate-400">
-            Growth projection over your {profile.horizonYears}-year horizon ({profile.investmentMode === "SIP" ? `${format(profile.investmentAmount)}/mo` : `${format(profile.investmentAmount)} lump sum`})
+          <p className="text-xs text-text-muted">
+            Estimated trajectory over {profile.horizonYears} years ({profile.investmentMode === "SIP" ? `${format(profile.investmentAmount)}/mo` : `${format(profile.investmentAmount)} lump sum`})
           </p>
         </div>
 
         {/* 3 Scenario Mode Switcher */}
-        <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl self-start sm:self-auto text-xs font-semibold">
+        <div className="flex items-center gap-1 bg-surface-muted p-1 rounded-lg self-start sm:self-auto text-xs font-medium border border-border">
           <button
             type="button"
             disabled={anyInsufficient}
             onClick={() => setScenarioMode("pessimistic")}
-            className={`px-2.5 py-1 rounded-lg transition-colors ${
+            className={`px-2.5 py-1 rounded transition-colors ${
               scenarioMode === "pessimistic"
-                ? "bg-rose-500 text-white shadow-sm"
+                ? "bg-danger text-white shadow-sm"
                 : anyInsufficient
-                ? "opacity-40 cursor-not-allowed text-slate-400"
-                : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                ? "opacity-40 cursor-not-allowed text-text-muted"
+                : "text-text-muted hover:text-text"
             }`}
           >
-            Pessimistic (10th %ile)
+            Pessimistic (10th)
           </button>
           <button
             type="button"
             onClick={() => setScenarioMode("base")}
-            className={`px-2.5 py-1 rounded-lg transition-colors ${
+            className={`px-2.5 py-1 rounded transition-colors ${
               scenarioMode === "base"
-                ? "bg-emerald-600 text-white shadow-sm"
-                : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                ? "bg-primary text-white shadow-sm"
+                : "text-text-muted hover:text-text"
             }`}
           >
-            Base Case (Median)
+            Base median
           </button>
           <button
             type="button"
             disabled={anyInsufficient}
             onClick={() => setScenarioMode("optimistic")}
-            className={`px-2.5 py-1 rounded-lg transition-colors ${
+            className={`px-2.5 py-1 rounded transition-colors ${
               scenarioMode === "optimistic"
-                ? "bg-teal-600 text-white shadow-sm"
+                ? "bg-primary text-white shadow-sm"
                 : anyInsufficient
-                ? "opacity-40 cursor-not-allowed text-slate-400"
-                : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                ? "opacity-40 cursor-not-allowed text-text-muted"
+                : "text-text-muted hover:text-text"
             }`}
           >
-            Optimistic (90th %ile)
+            Optimistic (90th)
           </button>
         </div>
       </div>
 
-      {anyInsufficient && (
-        <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-800 dark:text-amber-300 flex items-center gap-2">
-          <AlertCircle className="w-4 h-4 text-amber-500 shrink-0" />
-          <span>
-            <strong>Note on scenarios:</strong> One or more selected funds has a track record shorter than your {profile.horizonYears}-year horizon. Scenarios are disabled to preserve statistical accuracy (zero fabricated numbers).
-          </span>
-        </div>
-      )}
-
-      {/* Chart Canvas */}
-      <div className="h-72 w-full pt-2">
+      <div className="h-64 sm:h-72 w-full pt-2">
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={chartData} margin={{ top: 15, right: 25, left: 15, bottom: 15 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#334155" opacity={0.2} />
-            <XAxis dataKey="year" stroke="#94a3b8" fontSize={11} tickLine={false} />
+          <LineChart data={chartData} margin={{ top: 10, right: 15, bottom: 10, left: 15 }}>
+            <CartesianGrid strokeDasharray="3 3" stroke="currentColor" className="text-border" opacity={0.6} />
+            <XAxis dataKey="year" stroke="currentColor" className="text-text-muted" fontSize={11} tickLine={false} />
             <YAxis
-              stroke="#94a3b8"
+              stroke="currentColor"
+              className="text-text-muted"
               fontSize={11}
               tickLine={false}
-              tickFormatter={(v) => format(v, 0)}
-              domain={["auto", "auto"]}
+              tickFormatter={(v) => format(v)}
+              width={70}
             />
             <Tooltip
-              contentStyle={{
-                backgroundColor: "#0f172a",
-                borderColor: "#334155",
-                borderRadius: "0.75rem",
-                fontSize: "12px",
-                color: "#f8fafc",
+              content={({ payload, label }) => {
+                if (!payload || payload.length === 0) return null;
+                return (
+                  <div className="bg-surface text-text p-3 rounded-lg border border-border text-xs space-y-1.5 shadow-md">
+                    <div className="font-semibold text-text">{label}</div>
+                    <div className="space-y-1">
+                      {payload.map((p: any, idx: number) => (
+                        <div key={idx} className="flex justify-between gap-4">
+                          <span className="flex items-center gap-1.5 text-text-muted">
+                            <span className="w-2 h-2 rounded-full" style={{ backgroundColor: p.color }} />
+                            <span>{p.name}:</span>
+                          </span>
+                          <span className="font-semibold tabular-nums text-text">
+                            {format(p.value)}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
               }}
-              formatter={(val: any) => [format(val), ""]}
             />
-            <Legend verticalAlign="bottom" wrapperStyle={{ fontSize: "11px", paddingTop: "12px" }} />
-
-            {/* Invested Capital Line */}
+            {/* Invested Capital reference line */}
             <Line
               type="monotone"
               dataKey="Invested Capital"
-              stroke="#94a3b8"
+              stroke="#64748b"
               strokeDasharray="4 4"
               strokeWidth={1.5}
               dot={false}
             />
-
-            {/* Instrument Lines */}
-            {instruments.map((inst, idx) => (
-              <Line
-                key={inst.id}
-                type="monotone"
-                dataKey={inst.name}
-                stroke={colors[idx % colors.length]}
-                strokeWidth={2.5}
-                dot={{ r: 3 }}
-                activeDot={{ r: 6 }}
-              />
-            ))}
+            {instruments.map((inst, idx) => {
+              const shortName = getShortInstrumentName(inst.name, inst.type);
+              const color = getInstrumentColor(idx);
+              return (
+                <Line
+                  key={inst.id}
+                  type="monotone"
+                  dataKey={shortName}
+                  name={shortName}
+                  stroke={color}
+                  strokeWidth={2}
+                  dot={{ r: 3, fill: color }}
+                  activeDot={{ r: 5 }}
+                />
+              );
+            })}
           </LineChart>
         </ResponsiveContainer>
+      </div>
+
+      {/* Legend below */}
+      <div className="pt-1 flex flex-wrap items-center justify-center gap-4 text-xs">
+        <div className="flex items-center gap-1.5">
+          <span className="w-3 h-0.5 border-t-2 border-dashed border-slate-500 shrink-0" />
+          <span className="text-text-muted font-medium">Invested Capital</span>
+        </div>
+        {instruments.map((inst, idx) => (
+          <div key={inst.id} className="flex items-center gap-1.5">
+            <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: getInstrumentColor(idx) }} />
+            <span className="text-text-muted font-medium">{getShortInstrumentName(inst.name, inst.type)}</span>
+          </div>
+        ))}
       </div>
     </div>
   );

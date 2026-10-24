@@ -84,20 +84,20 @@ export default function LicDetailPage() {
   }
 
   return (
-    <div className="w-full space-y-8">
+    <div className="w-full space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
-            <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-amber-500/10 text-amber-700 dark:text-amber-400">
+            <span className="px-2 py-0.5 rounded text-[11px] font-medium bg-primary/10 text-primary">
               {plan?.planType} Plan
             </span>
-            <span className="text-xs text-slate-400">Plan No: {plan?.planNo}</span>
+            <span className="text-xs text-text-muted">Plan No: {plan?.planNo}</span>
           </div>
-          <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-semibold text-text tracking-tight">
             {plan?.planName}
           </h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400">{plan?.description}</p>
+          <p className="text-xs text-text-muted">{plan?.description}</p>
         </div>
 
         {plan && (
@@ -109,15 +109,15 @@ export default function LicDetailPage() {
         )}
       </div>
 
-      {/* User Policy Input & Live IRR Calculator (Correction #5) */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm space-y-4">
-          <h3 className="font-heading font-bold text-sm text-slate-900 dark:text-white border-b border-slate-200 dark:border-slate-800 pb-2">
-            Enter Quote Details
+      {/* User Policy Input & Live IRR Calculator */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="bg-surface rounded-xl border border-border p-5 shadow-sm space-y-4 transition-colors">
+          <h3 className="font-semibold text-sm text-text border-b border-border pb-2">
+            Enter quote details
           </h3>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+            <label className="block text-xs font-medium text-text mb-1">
               Annual Premium (₹)
             </label>
             <input
@@ -125,12 +125,12 @@ export default function LicDetailPage() {
               step={5000}
               value={annualPremium}
               onChange={(e) => setAnnualPremium(Number(e.target.value))}
-              className="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-transparent text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+              className="w-full px-3 py-2 rounded-lg border border-border bg-surface text-text text-xs focus:ring-1 focus:ring-primary focus:outline-none"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+            <label className="block text-xs font-medium text-text mb-1">
               Basic Sum Assured (₹)
             </label>
             <input
@@ -138,13 +138,13 @@ export default function LicDetailPage() {
               step={50000}
               value={sumAssured}
               onChange={(e) => setSumAssured(Number(e.target.value))}
-              className="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-transparent text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+              className="w-full px-3 py-2 rounded-lg border border-border bg-surface text-text text-xs focus:ring-1 focus:ring-primary focus:outline-none"
             />
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+              <label className="block text-xs font-medium text-text mb-1">
                 Policy Term (Yrs)
               </label>
               <input
@@ -153,13 +153,13 @@ export default function LicDetailPage() {
                 max={30}
                 value={policyTerm}
                 onChange={(e) => setPolicyTerm(Number(e.target.value))}
-                className="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-transparent text-sm"
+                className="w-full px-3 py-2 rounded-lg border border-border bg-surface text-text text-xs"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                Premium Paying Term
+              <label className="block text-xs font-medium text-text mb-1">
+                PPT (Yrs)
               </label>
               <input
                 type="number"
@@ -167,12 +167,12 @@ export default function LicDetailPage() {
                 max={policyTerm}
                 value={ppt}
                 onChange={(e) => setPpt(Number(e.target.value))}
-                className="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-transparent text-sm"
+                className="w-full px-3 py-2 rounded-lg border border-border bg-surface text-text text-xs"
               />
             </div>
           </div>
 
-          <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 text-[11px] text-slate-500 space-y-1">
+          <div className="p-3 rounded-lg bg-surface-muted border border-border text-[11px] text-text-muted space-y-1">
             <div>Brochure Reversionary Bonus: ₹{plan?.reversionaryBonusPerThousandSA}/1,000 SA</div>
             <div>Final Additional Bonus: ₹{plan?.finalAdditionalBonusPerThousandSA}/1,000 SA</div>
             <div>GST on Premium: 0% (Exempt since 22 Sep 2025)</div>
@@ -181,43 +181,43 @@ export default function LicDetailPage() {
 
         {/* Live Mathematical Returns Output */}
         <div className="lg:col-span-2 space-y-6">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-1">
-              <span className="text-xs text-slate-400">Total Premiums Paid:</span>
-              <div className="text-lg font-bold text-slate-900 dark:text-white tabular-nums">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div className="p-4 rounded-xl bg-surface border border-border space-y-1 transition-colors">
+              <span className="text-xs text-text-muted">Total premiums paid:</span>
+              <div className="text-lg font-semibold text-text tabular-nums">
                 {format(licResult.totalPremiumsPaid)}
               </div>
-              <span className="text-[10px] text-slate-500">Over {ppt} years</span>
+              <span className="text-[10px] text-text-muted">Over {ppt} years</span>
             </div>
 
-            <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-1">
-              <span className="text-xs text-slate-400">Projected Maturity Corpus:</span>
-              <div className="text-lg font-bold text-emerald-600 dark:text-emerald-400 tabular-nums">
+            <div className="p-4 rounded-xl bg-surface border border-border space-y-1 transition-colors">
+              <span className="text-xs text-text-muted">Projected maturity corpus:</span>
+              <div className="text-lg font-semibold text-primary tabular-nums">
                 {format(licResult.maturityCorpus)}
               </div>
-              <span className="text-[10px] text-slate-500">SA + Accumulated Bonuses</span>
+              <span className="text-[10px] text-text-muted">SA + Accumulated bonuses</span>
             </div>
 
-            <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 space-y-1">
-              <span className="text-xs text-emerald-800 dark:text-emerald-300 font-semibold">
-                Actual Mathematical IRR:
+            <div className="p-4 rounded-xl bg-primary/10 border border-primary/20 space-y-1 transition-colors">
+              <span className="text-xs text-primary font-medium">
+                Calculated IRR:
               </span>
-              <div className="text-2xl font-extrabold text-emerald-600 dark:text-emerald-400 tabular-nums">
+              <div className="text-xl font-semibold text-primary tabular-nums">
                 {formatPercent(licResult.effectiveIrrPct)}
               </div>
-              <span className="text-[10px] text-emerald-700 dark:text-emerald-300 font-medium">
+              <span className="text-[10px] text-primary/80">
                 Pure cash-flow IRR (Newton-Raphson)
               </span>
             </div>
           </div>
 
-          {/* Surrender Value Trap Warning */}
-          <div className="p-5 rounded-2xl bg-rose-50/70 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900/60 space-y-3 text-xs">
-            <div className="flex items-center gap-2 font-bold text-rose-800 dark:text-rose-300 text-sm">
-              <AlertTriangle className="w-4 h-4 text-rose-500" />
-              <span>Surrender Penalty Warning</span>
+          {/* Surrender Value Warning */}
+          <div className="p-4 rounded-xl bg-danger/5 border border-danger/20 space-y-2 text-xs">
+            <div className="flex items-center gap-2 font-medium text-danger text-sm">
+              <AlertTriangle className="w-4 h-4 text-danger" />
+              <span>Surrender penalty caveat</span>
             </div>
-            <p className="text-rose-900/80 dark:text-rose-200 leading-relaxed">
+            <p className="text-text-muted leading-relaxed">
               If you discontinue this policy early: Year 1 gives ₹0 refund. Surrendering in Year 2–3 causes a <strong>50%–70% capital loss</strong> of all premiums paid.
             </p>
           </div>
