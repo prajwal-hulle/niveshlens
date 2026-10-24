@@ -11,38 +11,37 @@ import {
   Target,
   Landmark,
   ShieldAlert,
-  PiggyBank,
 } from "lucide-react";
 
 export default function HomePage() {
   const scenarios = [
     {
       title: "Save tax",
-      href: "/compare?preset=tax-saving",
+      href: "/compare?preset=tax-saving&i=ppf,fd:sbi-5y,mf:119598&horizon=5&regime=OLD",
       icon: Percent,
       desc: "Compare Section 80C options: PPF, tax-saver ELSS fund, and 5-year bank FD.",
     },
     {
       title: "Build an emergency fund",
-      href: "/compare?preset=emergency",
+      href: "/compare?preset=emergency&i=fd:sbi-1y&horizon=1&mode=LUMPSUM&amount=100000",
       icon: Shield,
       desc: "High liquidity and safety with minimal early exit penalties.",
     },
     {
       title: "Grow money for 10+ years",
-      href: "/compare?preset=growth",
+      href: "/compare?preset=growth&i=mf:122639,ppf&horizon=10",
       icon: TrendingUp,
       desc: "Long-term compounding to outpace inflation with equity funds and PPF.",
     },
     {
       title: "Plan for a child's education",
-      href: "/compare?preset=child-education",
+      href: "/compare?preset=child-education&i=mf:122639,ppf&horizon=12",
       icon: Target,
       desc: "Medium horizon goal balancing growth with capital protection.",
     },
     {
       title: "Retirement income",
-      href: "/compare?preset=retirement",
+      href: "/compare?preset=retirement&i=ppf,mf:122639,fd:sbi-5y&horizon=15",
       icon: Landmark,
       desc: "Stable corpus accumulation combining sovereign safety and regular growth.",
     },

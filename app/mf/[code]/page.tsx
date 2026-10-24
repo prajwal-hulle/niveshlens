@@ -4,15 +4,16 @@ import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
 import { useCurrency } from "@/components/currency-context";
+import { useCompareSelection } from "@/components/compare/selection-context";
 import { formatPercent } from "@/lib/utils";
 import {
   TrendingUp,
   Percent,
   AlertCircle,
   Loader2,
-  Plus,
+  Check,
+  ArrowRight,
 } from "lucide-react";
-import { stageInstrumentForCompare } from "@/components/compare/floating-compare-pill";
 import {
   ResponsiveContainer,
   LineChart,
@@ -27,6 +28,7 @@ export default function MfDetailPage() {
   const params = useParams();
   const schemeCode = Number(params.code) || 122639;
   const { format } = useCurrency();
+  const { addInstrument, isSelected } = useCompareSelection();
   const [timeline, setTimeline] = useState<"1M" | "6M" | "1Y" | "3Y" | "5Y" | "Max">("1Y");
 
   const { data: fund, isLoading, isError } = useQuery({
@@ -61,6 +63,8 @@ export default function MfDetailPage() {
     );
   }
 
+  const added = isSelected("MF", fund.schemeCode);
+
   // Filter sample data based on selected timeline
   const rawHistory = fund.navHistorySample || [];
   let displayHistory = rawHistory;
@@ -93,17 +97,33 @@ export default function MfDetailPage() {
           <button
             type="button"
             onClick={() =>
-              stageInstrumentForCompare({
-                id: `mf-${fund.schemeCode}-${Date.now()}`,
-                type: "MF",
-                schemeCode: fund.schemeCode,
-                schemeName: fund.schemeName,
-              })
+              addInstrument(
+                {
+                  id: `mf-${fund.schemeCode}`,
+                  type: "MF",
+                  schemeCode: fund.schemeCode,
+                  schemeName: fund.schemeName,
+                },
+                true
+              )
             }
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary hover:bg-primary-hover text-white text-xs font-medium shadow-sm transition-colors"
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium shadow-sm transition-colors ${
+              added
+                ? "bg-primary/10 text-primary hover:bg-primary/20"
+                : "bg-primary text-white hover:bg-primary-hover"
+            }`}
           >
-            <Plus className="w-3.5 h-3.5" />
-            <span>Add to compare</span>
+            {added ? (
+              <>
+                <Check className="w-3.5 h-3.5" />
+                <span>✓ Added</span>
+              </>
+            ) : (
+              <>
+                <span>Compare</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </>
+            )}
           </button>
 
           {isValidNavDate && (

@@ -15,6 +15,212 @@ interface MetricsTableProps {
 export function MetricsTable({ instruments, profile }: MetricsTableProps) {
   const { format } = useCurrency();
 
+  const isAllFd =
+    instruments.length > 0 && instruments.every((inst) => inst.type === "FD");
+
+  // Bank Comparison View
+  if (isAllFd) {
+    return (
+      <div className="bg-surface rounded-xl border border-border shadow-sm overflow-hidden transition-colors">
+        <div className="p-4 sm:p-5 border-b border-border flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <h3 className="font-semibold text-base text-text">
+              Bank fixed deposit comparison
+            </h3>
+            <p className="text-xs text-text-muted">
+              Side-by-side interest rates, compounding, tax drag, and early withdrawal penalties.
+            </p>
+          </div>
+          <div className="text-[11px] text-text-muted">
+            Slab applied: <strong>{profile.taxRegime} Regime ({profile.financialYear})</strong>
+          </div>
+        </div>
+
+        <div className="relative">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs border-collapse">
+              <thead>
+                <tr className="bg-surface-muted border-b border-border h-14">
+                  <th className="p-4 font-medium text-text-muted text-xs sticky left-0 bg-surface-muted z-20 w-56 min-w-[200px] border-r border-border align-middle">
+                    Bank feature
+                  </th>
+                  {instruments.map((inst) => (
+                    <th key={inst.id} className="p-4 font-semibold text-text min-w-[200px] align-middle">
+                      <div className="space-y-0.5">
+                        <div className="text-sm font-semibold truncate" title={inst.name}>
+                          {inst.name.split("–")[0]?.trim() || inst.name}
+                        </div>
+                        <span className="inline-block px-2 py-0.5 rounded text-[10px] font-medium bg-primary/10 text-primary">
+                          {inst.name.split("–")[1]?.trim() || inst.category}
+                        </span>
+                      </div>
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border">
+                {/* 1. Bank Name */}
+                <tr>
+                  <td className="p-4 sticky left-0 bg-surface z-10 w-56 min-w-[200px] border-r border-border font-medium text-text-muted">
+                    Bank
+                  </td>
+                  {instruments.map((inst) => (
+                    <td key={inst.id} className="p-4 font-semibold text-text min-w-[200px]">
+                      {inst.name.split("–")[0]?.trim() || inst.name}
+                    </td>
+                  ))}
+                </tr>
+
+                {/* 2. Tenure */}
+                <tr className="bg-surface-muted/40">
+                  <td className="p-4 sticky left-0 bg-surface-muted z-10 w-56 min-w-[200px] border-r border-border font-medium text-text-muted">
+                    Tenure
+                  </td>
+                  {instruments.map((inst) => (
+                    <td key={inst.id} className="p-4 font-medium text-text min-w-[200px]">
+                      {inst.name.includes("–")
+                        ? inst.name.split("–")[1]?.trim()
+                        : inst.lockInPeriodMonths
+                        ? `${Math.round(inst.lockInPeriodMonths / 12)} Years`
+                        : "Fixed tenure"}
+                    </td>
+                  ))}
+                </tr>
+
+                {/* 3. Interest Rate */}
+                <tr>
+                  <td className="p-4 sticky left-0 bg-surface z-10 w-56 min-w-[200px] border-r border-border font-medium text-text-muted">
+                    Interest rate
+                  </td>
+                  {instruments.map((inst) => (
+                    <td key={inst.id} className="p-4 font-semibold text-primary tabular-nums text-sm min-w-[200px]">
+                      {formatPercent(inst.nominalReturnPct)} p.a.
+                    </td>
+                  ))}
+                </tr>
+
+                {/* 4. Compounding */}
+                <tr className="bg-surface-muted/40">
+                  <td className="p-4 sticky left-0 bg-surface-muted z-10 w-56 min-w-[200px] border-r border-border font-medium text-text-muted">
+                    Compounding
+                  </td>
+                  {instruments.map((inst) => (
+                    <td key={inst.id} className="p-4 text-text min-w-[200px]">
+                      Quarterly compounding
+                    </td>
+                  ))}
+                </tr>
+
+                {/* 5. Early Exit Penalty */}
+                <tr>
+                  <td className="p-4 sticky left-0 bg-surface z-10 w-56 min-w-[200px] border-r border-border font-medium text-text-muted">
+                    Early exit penalty
+                  </td>
+                  {instruments.map((inst) => (
+                    <td key={inst.id} className="p-4 font-medium text-warning tabular-nums min-w-[200px]">
+                      {inst.prematurePenaltyPct}% rate deduction
+                    </td>
+                  ))}
+                </tr>
+
+                {/* 6. Maturity Amount (Before Tax) */}
+                <tr className="bg-surface-muted/40">
+                  <td className="p-4 sticky left-0 bg-surface-muted z-10 w-56 min-w-[200px] border-r border-border font-medium text-text-muted">
+                    Maturity amount
+                  </td>
+                  {instruments.map((inst) => (
+                    <td key={inst.id} className="p-4 font-semibold text-text tabular-nums text-sm min-w-[200px]">
+                      {format(inst.projectedCorpus.base)}
+                    </td>
+                  ))}
+                </tr>
+
+                {/* 7. Maturity After Tax */}
+                <tr>
+                  <td className="p-4 sticky left-0 bg-surface z-10 w-56 min-w-[200px] border-r border-border font-medium text-text-muted">
+                    Maturity after tax ({profile.taxRegime} slab)
+                  </td>
+                  {instruments.map((inst) => (
+                    <td key={inst.id} className="p-4 font-medium tabular-nums text-text min-w-[200px]">
+                      <div className="space-y-0.5">
+                        <span className="font-semibold text-primary">
+                          {formatPercent(inst.postTaxReturnPct)} net p.a.
+                        </span>
+                        <div className="text-[10px] text-text-muted">
+                          Real: {formatPercent(inst.realReturnPct)} (after inflation)
+                        </div>
+                      </div>
+                    </td>
+                  ))}
+                </tr>
+
+                {/* 8. TDS Applies */}
+                <tr className="bg-surface-muted/40">
+                  <td className="p-4 sticky left-0 bg-surface-muted z-10 w-56 min-w-[200px] border-r border-border font-medium text-text-muted">
+                    TDS applies
+                  </td>
+                  {instruments.map((inst) => {
+                    const interestEarned =
+                      inst.projectedCorpus.base -
+                      (profile.investmentMode === "SIP"
+                        ? profile.investmentAmount * 12 * profile.horizonYears
+                        : profile.investmentAmount);
+                    const isSenior = profile.age >= 60;
+                    const threshold = isSenior ? 100000 : 50000;
+                    const applies = interestEarned > threshold;
+                    return (
+                      <td key={inst.id} className="p-4 text-xs font-medium min-w-[200px]">
+                        {applies ? (
+                          <span className="text-warning">
+                            Yes (Interest &gt; ₹{threshold.toLocaleString("en-IN")})
+                          </span>
+                        ) : (
+                          <span className="text-primary">
+                            No (Below ₹{threshold.toLocaleString("en-IN")} threshold)
+                          </span>
+                        )}
+                      </td>
+                    );
+                  })}
+                </tr>
+
+                {/* 9. Deposit Cover Note */}
+                <tr>
+                  <td className="p-4 sticky left-0 bg-surface z-10 w-56 min-w-[200px] border-r border-border font-medium text-text-muted">
+                    Deposit cover note
+                  </td>
+                  {instruments.map((inst) => (
+                    <td key={inst.id} className="p-4 text-xs text-text-muted leading-relaxed min-w-[200px]">
+                      DICGC insurance cover up to ₹5,00,000 per depositor per bank
+                    </td>
+                  ))}
+                </tr>
+
+                {/* 10. Source & Freshness */}
+                <tr className="bg-surface-muted/40">
+                  <td className="p-4 sticky left-0 bg-surface-muted z-10 w-56 min-w-[200px] border-r border-border font-medium text-text-muted">
+                    Source &amp; verified
+                  </td>
+                  {instruments.map((inst) => (
+                    <td key={inst.id} className="p-4 min-w-[200px]">
+                      <FreshnessBadge
+                        sourceName={inst.dataSource.name}
+                        sourceUrl={inst.dataSource.url}
+                        lastUpdated={inst.dataSource.lastUpdated}
+                        isSeed={inst.dataSource.isSeed}
+                      />
+                    </td>
+                  ))}
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Regular Multi-Asset Comparison View
   return (
     <div className="bg-surface rounded-xl border border-border shadow-sm overflow-hidden transition-colors">
       <div className="p-4 sm:p-5 border-b border-border flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -218,7 +424,7 @@ export function MetricsTable({ instruments, profile }: MetricsTableProps) {
                   <FormulaTooltip
                     label="Expense ratio / Admin load"
                     formula="Annual TER disclosed by AMC to AMFI"
-                    explanation="Annual percentage fee deducted directly from scheme AUM. (Per correction #4: never estimated; if missing shows 'TER unavailable')."
+                    explanation="Annual percentage fee deducted directly from scheme AUM. Never estimated; if missing shows 'TER unavailable'."
                     source="AMFI Monthly TER Disclosures"
                   />
                 </td>

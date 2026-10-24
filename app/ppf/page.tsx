@@ -3,13 +3,14 @@
 import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useCurrency } from "@/components/currency-context";
+import { useCompareSelection } from "@/components/compare/selection-context";
 import { calculatePpfSchedule } from "@/lib/finance/compound";
 import { FreshnessBadge } from "@/components/freshness-badge";
-import { Shield, CheckCircle2, AlertCircle, Info, Landmark, Plus } from "lucide-react";
-import { stageInstrumentForCompare } from "@/components/compare/floating-compare-pill";
+import { Shield, CheckCircle2, AlertCircle, Info, Landmark, Check, ArrowRight } from "lucide-react";
 
 export default function PpfPage() {
   const { format } = useCurrency();
+  const { addInstrument, isSelected } = useCompareSelection();
   const [annualDeposit, setAnnualDeposit] = useState(150000);
 
   const { data: ratesData } = useQuery({
@@ -23,8 +24,9 @@ export default function PpfPage() {
 
   const ppfRecord = ratesData?.smallSavings?.find((s: any) => s.schemeCode === "PPF");
   const notifiedRate = ppfRecord?.notifiedRatePct ?? 7.1;
+  const added = isSelected("PPF");
 
-  // Strict PPF schedule conforming to Indian rules (correction #8)
+  // Strict PPF schedule conforming to Indian rules
   const ppfData = calculatePpfSchedule(annualDeposit, notifiedRate, 15);
 
   return (
@@ -44,15 +46,31 @@ export default function PpfPage() {
           <button
             type="button"
             onClick={() =>
-              stageInstrumentForCompare({
-                id: `ppf-${Date.now()}`,
-                type: "PPF",
-              })
+              addInstrument(
+                {
+                  id: "ppf",
+                  type: "PPF",
+                },
+                true
+              )
             }
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary hover:bg-primary-hover text-white text-xs font-medium shadow-sm transition-colors shrink-0"
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium shadow-sm transition-colors shrink-0 ${
+              added
+                ? "bg-primary/10 text-primary hover:bg-primary/20"
+                : "bg-primary text-white hover:bg-primary-hover"
+            }`}
           >
-            <Plus className="w-3.5 h-3.5" />
-            <span>Add to compare</span>
+            {added ? (
+              <>
+                <Check className="w-3.5 h-3.5" />
+                <span>✓ Added</span>
+              </>
+            ) : (
+              <>
+                <span>Compare</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </>
+            )}
           </button>
 
           {ppfRecord && (

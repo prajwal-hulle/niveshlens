@@ -4,17 +4,18 @@ import React, { useState } from "react";
 import { useParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { useCurrency } from "@/components/currency-context";
+import { useCompareSelection } from "@/components/compare/selection-context";
 import { calculateLicCashFlowsAndIRR } from "@/lib/finance/insurance";
 import { FreshnessBadge } from "@/components/freshness-badge";
 import { formatPercent } from "@/lib/utils";
-import { Shield, ExternalLink, AlertTriangle, ArrowRight, CheckCircle2, Plus } from "lucide-react";
+import { Shield, ExternalLink, AlertTriangle, ArrowRight, CheckCircle2, Check } from "lucide-react";
 import Link from "next/link";
-import { stageInstrumentForCompare } from "@/components/compare/floating-compare-pill";
 
 export default function LicDetailPage() {
   const params = useParams();
   const planId = (params.id as string) || "lic-jeevan-labh-936";
   const { format } = useCurrency();
+  const { addInstrument, isSelected } = useCompareSelection();
 
   const [annualPremium, setAnnualPremium] = useState(85600);
   const [sumAssured, setSumAssured] = useState(1000000);
@@ -31,6 +32,7 @@ export default function LicDetailPage() {
   });
 
   const plan = ratesData?.insurance?.find((p: any) => p.planId === planId);
+  const added = isSelected("LIC", plan?.planId);
 
   const licResult = calculateLicCashFlowsAndIRR({
     annualPremium,
@@ -77,7 +79,7 @@ export default function LicDetailPage() {
     return (
       <div className="max-w-3xl mx-auto px-4 py-16 text-center space-y-4">
         <h2 className="text-xl font-bold">Policy Not Found</h2>
-        <Link href="/compare" className="text-emerald-600 font-bold hover:underline">
+        <Link href="/compare" className="text-primary font-bold hover:underline">
           Return to Comparator
         </Link>
       </div>
@@ -102,24 +104,42 @@ export default function LicDetailPage() {
         </div>
 
         <div className="flex items-center gap-3 shrink-0">
-          <button
-            type="button"
-            onClick={() =>
-              stageInstrumentForCompare({
-                id: `lic-${plan.planId}-${Date.now()}`,
-                type: "LIC",
-                planId: plan.planId,
-                annualPremium,
-                sumAssured,
-                policyTerm,
-                premiumPayingTerm: ppt,
-              })
-            }
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary hover:bg-primary-hover text-white text-xs font-medium shadow-sm transition-colors"
-          >
-            <Plus className="w-3.5 h-3.5" />
-            <span>Add to compare</span>
-          </button>
+          {plan && (
+            <button
+              type="button"
+              onClick={() =>
+                addInstrument(
+                  {
+                    id: `lic-${plan.planId}`,
+                    type: "LIC",
+                    planId: plan.planId,
+                    annualPremium,
+                    sumAssured,
+                    policyTerm,
+                    premiumPayingTerm: ppt,
+                  },
+                  true
+                )
+              }
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium shadow-sm transition-colors ${
+                added
+                  ? "bg-primary/10 text-primary hover:bg-primary/20"
+                  : "bg-primary text-white hover:bg-primary-hover"
+              }`}
+            >
+              {added ? (
+                <>
+                  <Check className="w-3.5 h-3.5" />
+                  <span>✓ Added</span>
+                </>
+              ) : (
+                <>
+                  <span>Compare</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </>
+              )}
+            </button>
+          )}
 
           {plan && (
             <FreshnessBadge

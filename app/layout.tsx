@@ -3,6 +3,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { QueryProvider } from "@/components/query-provider";
 import { CurrencyProvider } from "@/components/currency-context";
+import { CompareSelectionProvider } from "@/components/compare/selection-context";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { FloatingComparePill } from "@/components/compare/floating-compare-pill";
@@ -58,10 +59,12 @@ export default function RootLayout({
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <QueryProvider>
             <CurrencyProvider>
-              <Navbar />
-              <main className="flex-1 mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 py-8">{children}</main>
-              <Footer />
-              <FloatingComparePill />
+              <CompareSelectionProvider>
+                <Navbar />
+                <main className="flex-1 mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 py-8">{children}</main>
+                <Footer />
+                <FloatingComparePill />
+              </CompareSelectionProvider>
             </CurrencyProvider>
           </QueryProvider>
         </ThemeProvider>

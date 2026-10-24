@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useState, useEffect, useMemo, useRef } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
-import { InstrumentSelector, SelectedInstrumentConfig } from "@/components/compare/instrument-selector";
+import { InstrumentSelector } from "@/components/compare/instrument-selector";
 import { ProjectionChart } from "@/components/compare/projection-chart";
 import { MetricsTable } from "@/components/compare/metrics-table";
 import { RiskReturnScatter } from "@/components/compare/risk-return-scatter";
@@ -14,7 +14,7 @@ import { TradeoffCards } from "@/components/compare/tradeoff-cards";
 import { InsuranceAdequacyPanel } from "@/components/compare/insurance-adequacy-panel";
 import { ShareExportBar } from "@/components/compare/share-export-bar";
 import { HelpTooltip } from "@/components/help-tooltip";
-import { getStagedInstruments, clearStagedInstruments } from "@/components/compare/floating-compare-pill";
+import { useCompareSelection } from "@/components/compare/selection-context";
 import { DEFAULT_WEIGHTS, ScoringWeights } from "@/lib/scoring";
 import { UserProfile, RiskAppetite, TaxRegime } from "@/lib/finance/types";
 import {
@@ -29,8 +29,9 @@ import {
   RotateCcw,
   X,
   Info,
-  CheckCircle2,
   Sparkles,
+  Building,
+  Plus,
 } from "lucide-react";
 import { getShortInstrumentName, getInstrumentColor } from "@/lib/chart-colors";
 import { formatPercent } from "@/lib/utils";
@@ -42,12 +43,14 @@ type ChartView = "growth" | "scatter" | "radar" | "exit";
 function CompareContent() {
   const searchParams = useSearchParams();
   const { format } = useCurrency();
+  const { selected, addInstrument, removeInstrument, clearAll } = useCompareSelection();
 
   // Tab state with hash sync
   const [activeTab, setActiveTab] = useState<CompareTab>("table");
   const [activeChartView, setActiveChartView] = useState<ChartView>("growth");
   const [showMoreDetails, setShowMoreDetails] = useState(false);
   const [hintDismissed, setHintDismissed] = useState(false);
+  const [selectorModalOpen, setSelectorModalOpen] = useState(false);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -75,27 +78,33 @@ function CompareContent() {
     }
   };
 
-  // Primary user inputs
-  const presetParam = searchParams.get("preset");
-
-  // Derive initial values from preset or query params
-  const initialMode = (searchParams.get("mode") as any) || (presetParam === "emergency" ? "LUMPSUM" : "SIP");
-  const initialAmount = Number(searchParams.get("amount")) || (presetParam === "emergency" ? 100000 : presetParam === "tax-saving" ? 12500 : 15000);
-  const initialYears = Number(searchParams.get("horizon")) || (presetParam === "emergency" ? 1 : presetParam === "tax-saving" ? 5 : presetParam === "growth" ? 10 : presetParam === "child-education" ? 12 : presetParam === "retirement" ? 15 : 10);
-  const initialRisk = (searchParams.get("risk") as RiskAppetite) || (presetParam === "emergency" ? "CONSERVATIVE" : presetParam === "growth" ? "AGGRESSIVE" : "MODERATE");
-
-  const [investmentMode, setInvestmentMode] = useState<"LUMPSUM" | "SIP">(initialMode);
-  const [investmentAmount, setInvestmentAmount] = useState<number>(initialAmount);
-  const [horizonYears, setHorizonYears] = useState<number>(initialYears);
-  const [riskComfort, setRiskComfort] = useState<RiskAppetite>(initialRisk);
-  const [taxRegime, setTaxRegime] = useState<TaxRegime>((searchParams.get("regime") as TaxRegime) || (presetParam === "tax-saving" ? "OLD" : "NEW"));
+  // User input profile state
+  const [investmentMode, setInvestmentMode] = useState<"LUMPSUM" | "SIP">(
+    (searchParams.get("mode") as any) || "SIP"
+  );
+  const [investmentAmount, setInvestmentAmount] = useState<number>(
+    Number(searchParams.get("amount")) || 15000
+  );
+  const [horizonYears, setHorizonYears] = useState<number>(
+    Number(searchParams.get("horizon")) || 5
+  );
+  const [riskComfort, setRiskComfort] = useState<RiskAppetite>(
+    (searchParams.get("risk") as RiskAppetite) || "MODERATE"
+  );
+  const [taxRegime, setTaxRegime] = useState<TaxRegime>(
+    (searchParams.get("regime") as TaxRegime) || "NEW"
+  );
   const [financialYear, setFinancialYear] = useState<"2024-25" | "2025-26" | "2026-27">("2024-25");
 
-  // Secondary details in collapsible section
+  // Secondary details
   const [age, setAge] = useState<number>(Number(searchParams.get("age")) || 32);
   const [annualIncome, setAnnualIncome] = useState<number>(Number(searchParams.get("income")) || 1200000);
-  const [existingLifeCover, setExistingLifeCover] = useState<number>(Number(searchParams.get("existingCover")) || 2500000);
-  const [outstandingLiabilities, setOutstandingLiabilities] = useState<number>(Number(searchParams.get("liabilities")) || 1000000);
+  const [existingLifeCover, setExistingLifeCover] = useState<number>(
+    Number(searchParams.get("existingCover")) || 2500000
+  );
+  const [outstandingLiabilities, setOutstandingLiabilities] = useState<number>(
+    Number(searchParams.get("liabilities")) || 1000000
+  );
   const [dependents, setDependents] = useState<number>(Number(searchParams.get("dependents")) || 2);
 
   // Fetch verified master rates from DB
@@ -111,101 +120,11 @@ function CompareContent() {
   const availableBanks = ratesData?.fd || [];
   const availableInsurancePlans = ratesData?.insurance || [];
 
-  // Selected instruments list
-  const [selectedInstruments, setSelectedInstruments] = useState<SelectedInstrumentConfig[]>([
-    { id: "fd-default", type: "FD", bankId: "sbi-1y" },
-    { id: "ppf-default", type: "PPF" },
-    { id: "mf-default", type: "MF", schemeCode: 122639, schemeName: "Parag Parikh Flexi Cap Fund - Direct - Growth" },
-    {
-      id: "lic-default",
-      type: "LIC",
-      planId: "lic-jeevan-labh-936",
-      annualPremium: 85600,
-      sumAssured: 1000000,
-      policyTerm: 16,
-      premiumPayingTerm: 10,
-    },
-  ]);
-
-  // Check for staged instruments or apply presets
-  useEffect(() => {
-    const staged = getStagedInstruments();
-    if (staged.length > 0) {
-      setSelectedInstruments(staged);
-      clearStagedInstruments();
-      return;
-    }
-
-    if (presetParam) {
-      applyPreset(presetParam);
-    }
-  }, [presetParam, ratesData]);
-
-  const applyPreset = (preset: string) => {
-    if (preset === "tax-saving") {
-      setHorizonYears(5);
-      setRiskComfort("MODERATE");
-      setTaxRegime("OLD");
-      setInvestmentAmount(12500);
-      setInvestmentMode("SIP");
-
-      // Best 5-year FD from DB
-      const fiveYearFd = availableBanks.find((b: any) => b.tenureBucket.toLowerCase().includes("5") || b.tenureBucket.toLowerCase().includes("tax")) || availableBanks[0];
-      setSelectedInstruments([
-        { id: `ppf-${Date.now()}`, type: "PPF" },
-        ...(fiveYearFd ? [{ id: `fd-${fiveYearFd.id}-${Date.now()}`, type: "FD" as const, bankId: fiveYearFd.id }] : []),
-        { id: `mf-elss-${Date.now()}`, type: "MF" as const, schemeCode: 119598, schemeName: "Mirae Asset ELSS Tax Saver Fund - Direct Plan - Growth" },
-      ]);
-    } else if (preset === "emergency") {
-      setHorizonYears(1);
-      setRiskComfort("CONSERVATIVE");
-      setInvestmentAmount(100000);
-      setInvestmentMode("LUMPSUM");
-
-      const shortFd = availableBanks[0];
-      setSelectedInstruments([
-        ...(shortFd ? [{ id: `fd-${shortFd.id}-${Date.now()}`, type: "FD" as const, bankId: shortFd.id }] : []),
-        { id: `ppf-${Date.now()}`, type: "PPF" },
-      ]);
-    } else if (preset === "growth") {
-      setHorizonYears(10);
-      setRiskComfort("AGGRESSIVE");
-      setInvestmentAmount(15000);
-      setInvestmentMode("SIP");
-
-      setSelectedInstruments([
-        { id: `mf-${Date.now()}`, type: "MF", schemeCode: 122639, schemeName: "Parag Parikh Flexi Cap Fund - Direct - Growth" },
-        { id: `ppf-${Date.now()}`, type: "PPF" },
-      ]);
-    } else if (preset === "child-education") {
-      setHorizonYears(12);
-      setRiskComfort("MODERATE");
-      setInvestmentAmount(10000);
-      setInvestmentMode("SIP");
-
-      setSelectedInstruments([
-        { id: `mf-${Date.now()}`, type: "MF", schemeCode: 122639, schemeName: "Parag Parikh Flexi Cap Fund - Direct - Growth" },
-        { id: `ppf-${Date.now()}`, type: "PPF" },
-      ]);
-    } else if (preset === "retirement") {
-      setHorizonYears(15);
-      setRiskComfort("MODERATE");
-      setInvestmentAmount(20000);
-      setInvestmentMode("SIP");
-
-      const topFd = availableBanks[0];
-      setSelectedInstruments([
-        { id: `ppf-${Date.now()}`, type: "PPF" },
-        { id: `mf-${Date.now()}`, type: "MF", schemeCode: 122639, schemeName: "Parag Parikh Flexi Cap Fund - Direct - Growth" },
-        ...(topFd ? [{ id: `fd-${topFd.id}-${Date.now()}`, type: "FD" as const, bankId: topFd.id }] : []),
-      ]);
-    }
-  };
-
+  // Reset inputs to clean defaults
   const handleReset = () => {
     setInvestmentMode("SIP");
     setInvestmentAmount(15000);
-    setHorizonYears(10);
+    setHorizonYears(5);
     setRiskComfort("MODERATE");
     setTaxRegime("NEW");
     setFinancialYear("2024-25");
@@ -214,20 +133,6 @@ function CompareContent() {
     setExistingLifeCover(2500000);
     setOutstandingLiabilities(1000000);
     setDependents(2);
-    setSelectedInstruments([
-      { id: "fd-default", type: "FD", bankId: "sbi-1y" },
-      { id: "ppf-default", type: "PPF" },
-      { id: "mf-default", type: "MF", schemeCode: 122639, schemeName: "Parag Parikh Flexi Cap Fund - Direct - Growth" },
-      {
-        id: "lic-default",
-        type: "LIC",
-        planId: "lic-jeevan-labh-936",
-        annualPremium: 85600,
-        sumAssured: 1000000,
-        policyTerm: 16,
-        premiumPayingTerm: 10,
-      },
-    ]);
   };
 
   // Construct current profile object
@@ -263,15 +168,14 @@ function CompareContent() {
     ]
   );
 
-  // Debounced profile state (400ms) for smooth live recalculation
+  // Debounced profile (400ms) for smooth live calculation
   const [debouncedProfile, setDebouncedProfile] = useState<UserProfile>(profile);
 
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedProfile(profile);
-      // Sync URL parameters without page reload
       if (typeof window !== "undefined") {
-        const params = new URLSearchParams();
+        const params = new URLSearchParams(window.location.search);
         params.set("mode", profile.investmentMode);
         params.set("amount", String(profile.investmentAmount));
         params.set("horizon", String(profile.horizonYears));
@@ -284,7 +188,7 @@ function CompareContent() {
     return () => clearTimeout(handler);
   }, [profile]);
 
-  // Scoring weights state
+  // Scoring weights
   const [customWeights, setCustomWeights] = useState<ScoringWeights>(
     DEFAULT_WEIGHTS[riskComfort] || DEFAULT_WEIGHTS.BALANCED
   );
@@ -293,7 +197,7 @@ function CompareContent() {
     setCustomWeights(DEFAULT_WEIGHTS[riskComfort] || DEFAULT_WEIGHTS.BALANCED);
   }, [riskComfort]);
 
-  // Query comparison calculation with keepPreviousData semantics
+  // Query comparison calculation with keepPreviousData
   const {
     data: compareData,
     isLoading,
@@ -301,30 +205,47 @@ function CompareContent() {
     isError,
     refetch,
   } = useQuery({
-    queryKey: ["comparison", debouncedProfile, selectedInstruments, customWeights],
+    queryKey: ["comparison", debouncedProfile, selected, customWeights],
     queryFn: async () => {
-      if (selectedInstruments.length === 0) return null;
+      if (selected.length === 0) return null;
       const res = await fetch("/api/compare", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           profile: debouncedProfile,
-          instruments: selectedInstruments,
+          instruments: selected,
           customWeights,
         }),
       });
       if (!res.ok) throw new Error("Comparison calculation failed");
       return res.json();
     },
-    enabled: selectedInstruments.length > 0,
+    enabled: selected.length > 0,
     staleTime: 60 * 1000,
   });
 
-  // Derive plain-language verdict from computed response data
+  const isAllFd =
+    compareData?.instruments?.length > 0 &&
+    compareData.instruments.every((inst: any) => inst.type === "FD");
+
+  // Plain-Language Verdict Card
   const verdict = useMemo(() => {
     if (!compareData?.instruments || compareData.instruments.length === 0) return null;
 
     const list = [...compareData.instruments];
+
+    if (isAllFd) {
+      const bestRate = [...list].sort((a, b) => b.nominalReturnPct - a.nominalReturnPct)[0];
+      const lowestPenalty = [...list].sort(
+        (a, b) => a.prematurePenaltyPct - b.prematurePenaltyPct
+      )[0];
+      return {
+        isBankOnly: true,
+        bestRate,
+        lowestPenalty,
+      };
+    }
+
     const highestRealReturn = [...list].sort((a, b) => b.realReturnPct - a.realReturnPct)[0];
     const safest = [...list].sort((a, b) => b.radarScores.safety - a.radarScores.safety)[0];
     const mostFlexible = [...list].sort(
@@ -354,6 +275,7 @@ function CompareContent() {
     };
 
     return {
+      isBankOnly: false,
       highestRealReturn,
       whyReturn: getWhyReturn(highestRealReturn.type),
       safest,
@@ -361,17 +283,45 @@ function CompareContent() {
       mostFlexible,
       whyFlexible: getWhyFlexible(mostFlexible.type),
     };
-  }, [compareData]);
+  }, [compareData, isAllFd]);
+
+  // Suggested Preset Handlers (adds from DB, never hardcoded IDs)
+  const handleSuggestBanks = () => {
+    setSelectorModalOpen(true);
+  };
+
+  const handleSuggestFdVsPpf = () => {
+    if (availableBanks.length === 0) return;
+    const sorted = [...availableBanks].sort((a, b) => b.generalRatePct - a.generalRatePct);
+    const topFd = sorted[0];
+    clearAll();
+    addInstrument({ id: `fd-${topFd.id}`, type: "FD", bankId: topFd.id });
+    addInstrument({ id: "ppf", type: "PPF" });
+  };
+
+  const handleSuggestFdVsMf = () => {
+    if (availableBanks.length === 0) return;
+    const sorted = [...availableBanks].sort((a, b) => b.generalRatePct - a.generalRatePct);
+    const topFd = sorted[0];
+    clearAll();
+    addInstrument({ id: `fd-${topFd.id}`, type: "FD", bankId: topFd.id });
+    addInstrument({
+      id: "mf-122639",
+      type: "MF",
+      schemeCode: 122639,
+      schemeName: "Parag Parikh Flexi Cap Fund - Direct - Growth",
+    });
+  };
 
   return (
     <div className="w-full space-y-6">
-      {/* Page Title & Quick Actions */}
+      {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl sm:text-3xl font-semibold text-text tracking-tight flex items-center gap-2">
             <span>Scheme comparator</span>
             {isFetching && (
-              <span title="Updating results...">
+              <span title="Updating calculation...">
                 <Loader2 className="w-4 h-4 text-primary animate-spin" />
               </span>
             )}
@@ -412,7 +362,7 @@ function CompareContent() {
         </div>
       )}
 
-      {/* Two-Column Responsive Layout */}
+      {/* Main Grid: Left Panel + Right Panel */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         {/* Left Sticky Panel: Your Details */}
         <aside
@@ -632,31 +582,62 @@ function CompareContent() {
 
         {/* Right Main Panel: Live Results */}
         <section className="lg:col-span-8 space-y-6">
-          {/* Instrument Selector Bar with single + Add button */}
+          {/* Selection Bar: Chips, Clear all, + Add */}
           <div className="p-3.5 rounded-2xl bg-surface border border-border shadow-sm">
             <InstrumentSelector
-              selected={selectedInstruments}
-              onChange={setSelectedInstruments}
+              selected={selected}
+              onAdd={addInstrument}
+              onRemove={removeInstrument}
+              onClearAll={clearAll}
               availableBanks={availableBanks}
               availableInsurancePlans={availableInsurancePlans}
-              onSelectPreset={applyPreset}
+              modalOpen={selectorModalOpen}
+              onModalOpenChange={setSelectorModalOpen}
             />
           </div>
 
-          {/* Empty State */}
-          {selectedInstruments.length === 0 && (
-            <div className="p-8 text-center rounded-2xl border border-border bg-surface space-y-3">
-              <Scale className="w-8 h-8 text-text-muted mx-auto" />
-              <p className="text-sm font-medium text-text">
-                You have no instruments selected yet. Pick a suggested preset below to start comparing.
-              </p>
+          {/* EMPTY STATE (Nothing Selected) */}
+          {selected.length === 0 && (
+            <div className="p-8 sm:p-12 text-center rounded-2xl border border-border bg-surface space-y-5 shadow-sm">
+              <div className="w-12 h-12 rounded-2xl bg-surface-muted text-primary mx-auto flex items-center justify-center border border-border">
+                <Scale className="w-6 h-6" />
+              </div>
+
+              <div className="space-y-1">
+                <h3 className="text-base font-semibold text-text">
+                  Pick something to compare
+                </h3>
+                <p className="text-xs text-text-muted max-w-sm mx-auto">
+                  Select up to 4 instruments using the button above, or choose a suggested comparison:
+                </p>
+              </div>
+
               <div className="flex flex-wrap items-center justify-center gap-2 pt-1">
                 <button
                   type="button"
-                  onClick={() => applyPreset("tax-saving")}
-                  className="px-3.5 py-2 rounded-lg bg-primary text-white text-xs font-medium hover:bg-primary-hover"
+                  onClick={handleSuggestBanks}
+                  className="px-3.5 py-2 rounded-lg bg-surface border border-border hover:border-primary text-xs font-medium text-text flex items-center gap-1.5 transition-colors"
                 >
-                  Load Tax-Saving Preset
+                  <Building className="w-3.5 h-3.5 text-primary" />
+                  <span>Compare banks</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleSuggestFdVsPpf}
+                  className="px-3.5 py-2 rounded-lg bg-surface border border-border hover:border-primary text-xs font-medium text-text flex items-center gap-1.5 transition-colors"
+                >
+                  <Scale className="w-3.5 h-3.5 text-primary" />
+                  <span>FD vs PPF</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleSuggestFdVsMf}
+                  className="px-3.5 py-2 rounded-lg bg-surface border border-border hover:border-primary text-xs font-medium text-text flex items-center gap-1.5 transition-colors"
+                >
+                  <Plus className="w-3.5 h-3.5 text-primary" />
+                  <span>FD vs Mutual fund</span>
                 </button>
               </div>
             </div>
@@ -679,8 +660,8 @@ function CompareContent() {
             </div>
           )}
 
-          {/* Initial Loading skeleton (only when no data is cached yet) */}
-          {isLoading && !compareData && (
+          {/* Loading State */}
+          {isLoading && selected.length > 0 && !compareData && (
             <div className="p-12 text-center rounded-2xl border border-border bg-surface space-y-3">
               <Loader2 className="w-6 h-6 text-primary animate-spin mx-auto" />
               <p className="text-sm font-medium text-text">
@@ -692,8 +673,8 @@ function CompareContent() {
             </div>
           )}
 
-          {/* Computed Results */}
-          {compareData && (
+          {/* Active Comparison Data */}
+          {compareData && selected.length > 0 && (
             <div className="space-y-6">
               {/* FY 2026-27 Disclaimer Banner */}
               {profile.financialYear === "2026-27" && (
@@ -720,35 +701,57 @@ function CompareContent() {
                 <div className="p-5 rounded-2xl bg-surface border border-border shadow-sm space-y-3">
                   <div className="flex items-center gap-2 pb-2 border-b border-border text-xs font-semibold uppercase tracking-wider text-primary">
                     <Sparkles className="w-4 h-4" />
-                    <span>Summary Verdict</span>
+                    <span>{verdict.isBankOnly ? "Bank Comparison Verdict" : "Summary Verdict"}</span>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
-                    {/* Highest Return */}
-                    <div className="p-3 rounded-xl bg-surface-muted border border-border space-y-1">
-                      <div className="font-medium text-text">
-                        Over {profile.horizonYears} years,{" "}
-                        <strong className="text-primary">{verdict.highestRealReturn.name}</strong> gives the highest real return after tax ({formatPercent(verdict.highestRealReturn.realReturnPct)}).
+                  {verdict.isBankOnly ? (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                      <div className="p-3.5 rounded-xl bg-surface-muted border border-border space-y-1">
+                        <div className="font-medium text-text">
+                          <strong className="text-primary">{verdict.bestRate.name}</strong> offers the highest contracted rate ({formatPercent(verdict.bestRate.nominalReturnPct)} p.a.).
+                        </div>
+                        <div className="text-[11px] text-text-muted">
+                          Yields {format(verdict.bestRate.projectedCorpus.base)} before tax for your horizon.
+                        </div>
                       </div>
-                      <div className="text-[11px] text-text-muted">{verdict.whyReturn}</div>
-                    </div>
 
-                    {/* Safest */}
-                    <div className="p-3 rounded-xl bg-surface-muted border border-border space-y-1">
-                      <div className="font-medium text-text">
-                        <strong className="text-primary">{verdict.safest.name}</strong> is the safest option ({verdict.safest.radarScores.safety}/100 safety score).
+                      <div className="p-3.5 rounded-xl bg-surface-muted border border-border space-y-1">
+                        <div className="font-medium text-text">
+                          <strong className="text-primary">{verdict.lowestPenalty.name}</strong> has the lowest early exit penalty ({verdict.lowestPenalty.prematurePenaltyPct}% rate deduction).
+                        </div>
+                        <div className="text-[11px] text-text-muted">
+                          Minimizes loss of interest if you need to withdraw unexpectedly before maturity.
+                        </div>
                       </div>
-                      <div className="text-[11px] text-text-muted">{verdict.whySafety}</div>
                     </div>
+                  ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+                      {/* Highest Return */}
+                      <div className="p-3 rounded-xl bg-surface-muted border border-border space-y-1">
+                        <div className="font-medium text-text">
+                          Over {profile.horizonYears} years,{" "}
+                          <strong className="text-primary">{verdict.highestRealReturn.name}</strong> gives the highest real return after tax ({formatPercent(verdict.highestRealReturn.realReturnPct)}).
+                        </div>
+                        <div className="text-[11px] text-text-muted">{verdict.whyReturn}</div>
+                      </div>
 
-                    {/* Lowest Penalty / Flexible */}
-                    <div className="p-3 rounded-xl bg-surface-muted border border-border space-y-1">
-                      <div className="font-medium text-text">
-                        <strong className="text-primary">{verdict.mostFlexible.name}</strong> lets you exit with the lowest penalty ({verdict.mostFlexible.prematurePenaltyPct}% penalty drag).
+                      {/* Safest */}
+                      <div className="p-3 rounded-xl bg-surface-muted border border-border space-y-1">
+                        <div className="font-medium text-text">
+                          <strong className="text-primary">{verdict.safest.name}</strong> is the safest option ({verdict.safest.radarScores.safety}/100 safety score).
+                        </div>
+                        <div className="text-[11px] text-text-muted">{verdict.whySafety}</div>
                       </div>
-                      <div className="text-[11px] text-text-muted">{verdict.whyFlexible}</div>
+
+                      {/* Lowest Penalty / Flexible */}
+                      <div className="p-3 rounded-xl bg-surface-muted border border-border space-y-1">
+                        <div className="font-medium text-text">
+                          <strong className="text-primary">{verdict.mostFlexible.name}</strong> lets you exit with the lowest penalty ({verdict.mostFlexible.prematurePenaltyPct}% penalty drag).
+                        </div>
+                        <div className="text-[11px] text-text-muted">{verdict.whyFlexible}</div>
+                      </div>
                     </div>
-                  </div>
+                  )}
                 </div>
               )}
 
@@ -816,7 +819,7 @@ function CompareContent() {
                     }`}
                   >
                     <Table className="w-3.5 h-3.5" />
-                    <span>Metrics table</span>
+                    <span>{isAllFd ? "Bank comparison table" : "Metrics table"}</span>
                   </button>
 
                   <button
